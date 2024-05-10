@@ -11,11 +11,15 @@ def get_user_choice():
     """Get's the user's choice and returns the value to be cached later."""
     user_choice = int(input("\n\n\n\n\n\nPlease pick an operation:\nReturn to main menu (0).\n"
                         "Print product list (1)."
-                        "\nAdd Product to list (2).\nUpdate existing product (3).\nDelete Product(4).\n"))
+                        "\nAdd Product to list (2).\nUpdate existing product (3)."
+                        "\nDelete Product(4).\n"))
 
     while user_choice not in [0, 1, 2, 3, 4]:
         print("Please pick a valid number.")
-        user_choice = int(input("Please pick an operation:\nReturn to main menu (0).\n Print product list (1).\nAdd Product to list (2).\nUpdate existing product (3).\nDelete Product(4).\n"))
+        user_choice = int(input("Please pick an operation:\nReturn to main menu (0)."
+                                "\n Print product list (1)."
+                                "\nAdd Product to list (2).\nUpdate existing product (3)."
+                                "\nDelete Product(4).\n"))
     return user_choice
 
 
@@ -24,11 +28,10 @@ def show_products():
     print("Here is a list of products")
     for (i, item) in enumerate(product_list, start = 0):
         print(i, item)
-        
 
 def iterable_decision_tree():
     """The decision tree the program goes through to provide functionality"""
-    user_choice_cache = get_user_choice()        
+    user_choice_cache = get_user_choice()
     if user_choice_cache == 0:
         print("Returning to the main menu.\n\n\n\n\n\n")
     elif user_choice_cache == 1:
@@ -58,14 +61,13 @@ def iterable_decision_tree():
         product_list.pop(user_change)
 
 if __name__ == "__main__":
-    x = "y"
-    while x == "y":
+    X = "y"
+    while X == "y":
         iterable_decision_tree()
-        x = str(input("Continue? (y/n)\n").lower())
-        while x not in ["y", "n"]:
+        X = str(input("Continue? (y/n)\n").lower())
+        while X not in ["y", "n"]:
             print("Please enter a valid input, y/n")
-            x = str(input("Continue? (y/n)\n").lower())
-        if x == "n":
+            X = str(input("Continue? (y/n)\n").lower())
+        if X == "n":
             print("Goodbye =)")
             sys.exit()
-            
