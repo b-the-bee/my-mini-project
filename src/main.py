@@ -9,17 +9,18 @@ product_list = ["White Americano","Black Americano", "Cappuccino", "Mocha", "Lat
 
 def get_user_choice():
     """Get's the user's choice and returns the value to be cached later."""
-    user_choice = int(input("\n\n\n\n\n\nPlease pick an operation:\nReturn to main menu (0).\n"
-                        "Print product list (1)."
-                        "\nAdd Product to list (2).\nUpdate existing product (3)."
-                        "\nDelete Product(4).\n"))
+    user_choice = input("\n\n\n\n\n\nPlease pick an operation:\nReturn to main menu (0).\n\
+                        Print product list (1).\
+                        \nAdd Product to list (2).\nUpdate existing product (3).\
+                        \nDelete Product(4).\n")
 
-    while user_choice not in [0, 1, 2, 3, 4]:
+    while user_choice not in ["0", "1", "2", "3", "4"]:
         print("Please pick a valid number.")
-        user_choice = int(input("Please pick an operation:\nReturn to main menu (0)."
-                                "\n Print product list (1)."
-                                "\nAdd Product to list (2).\nUpdate existing product (3)."
-                                "\nDelete Product(4).\n"))
+        user_choice = input("Please pick an operation:\nReturn to main menu (0).\
+                                \n Print product list (1).\
+                                \nAdd Product to list (2).\nUpdate existing product (3).\
+                                \nDelete Product(4).\n")
+    user_choice = int(user_choice)
     return user_choice
 
 
@@ -62,12 +63,11 @@ def iterable_decision_tree():
 
 if __name__ == "__main__":
     X = "y"
-    while X == "y":
+    while X != "n":
         iterable_decision_tree()
         X = str(input("Continue? (y/n)\n").lower())
         while X not in ["y", "n"]:
             print("Please enter a valid input, y/n")
             X = str(input("Continue? (y/n)\n").lower())
-        if X == "n":
-            print("Goodbye =)")
-            sys.exit()
+    print("Goodbye =)")
+    sys.exit()
