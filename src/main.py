@@ -88,7 +88,7 @@ def show_orders():
     """Shows a list of saved orders, formatted in dictionaries"""
     print("Here is the list of the orders:")
     for (i, item) in enumerate(customers_orders, start = 0):
-        print(i, item)
+        print(f"\n{i} \nCustomer Address:{[item['customer-name']]}\nCustomer Address:{[item['customer-address']]}\nCustomer Phone #:{[item['customer-phone']]}\nStatus:{[item['status']]} ")
 
 
 
@@ -96,7 +96,7 @@ def orders_decision_tree():
     """Decision tree if user chooses o"""
     user_choice_cache = orders_get_user_choice()
     if user_choice_cache == 0:
-        print("Returning to the main menu.\n\n\n\n\n\n")
+        print("Returning to the main menu, please select the appropriate inputs.\n\n\n\n\n\n")
     elif user_choice_cache == 1:
         order_list_length = len(customers_orders) - 1
         show_orders()
@@ -104,13 +104,19 @@ def orders_decision_tree():
         customer_name = str(input("What is your name?\n"))
         customer_address = str(input("What is your address?\n"))
         customer_phone = str(input("What is your phone number?\n"))
+        statuses = ["preparing", "paid", "completed"]
+        for (i, item) in enumerate(statuses, start = 0):
+            print(i, item)
+        chosen_status_ind = int(input("Please pick a status 0-2"))
+        chosen_status = statuses[chosen_status_ind]
         temp_dict = {
-            "customer-name": {customer_name},
-            "customer-address": {customer_address},
-            "customer-phone": {customer_phone},
-            "status": "preparing"
+            "customer-name": customer_name,
+            "customer-address": customer_address,
+            "customer-phone": customer_phone,
+            "status": chosen_status,
         }
         customers_orders.append(temp_dict)
+        print(customers_orders)
         show_orders()
     elif user_choice_cache == 3:
         order_list_length = len(customers_orders) - 1
@@ -119,8 +125,11 @@ def orders_decision_tree():
         while user_change < 0 or user_change > order_list_length:
             print("That is not a valid input")
             user_change = int(input(f"Which item do you wish to change? 0-{order_list_length}: "))
-        key_change = str(input("What about the order would you like to update?\
-            (customer-name, customer-address, customer-phone, status)").lower())
+        valid_keys = ["customer-name", "customer-address", "customer-phone", "status"]
+        key_change = str(input(f"What about the order would you like to update? {valid_keys}").lower())
+        while key_change not in valid_keys:
+            print("That is not a valid input.")
+            key_change = str(input(f"What about the order would you like to update? {valid_keys}").lower())
         details_change = str(input("What do you wish to change it to?"))
         customers_orders[user_change][key_change] = details_change
         show_orders()
