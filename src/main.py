@@ -105,9 +105,10 @@ def orders_decision_tree():
         customer_address = str(input("What is your address?\n"))
         customer_phone = str(input("What is your phone number?\n"))
         statuses = ["preparing", "paid", "completed"]
+        status_length = len(statuses)
         for (i, item) in enumerate(statuses, start = 0):
             print(i, item)
-        chosen_status_ind = int(input("Please pick a status 0-2"))
+        chosen_status_ind = int(input(f"Please pick a status 0-{status_length}"))
         chosen_status = statuses[chosen_status_ind]
         temp_dict = {
             "customer-name": customer_name,
