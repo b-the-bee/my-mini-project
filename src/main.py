@@ -88,7 +88,11 @@ def show_orders():
     """Shows a list of saved orders, formatted in dictionaries"""
     print("Here is the list of the orders:")
     for (i, item) in enumerate(customers_orders, start = 0):
-        print(f"\n{i} \nCustomer Address:{[item['customer-name']]}\nCustomer Address:{[item['customer-address']]}\nCustomer Phone #:{[item['customer-phone']]}\nStatus:{[item['status']]} ")
+        print(f"""Order: \n{i}. 
+              \nCustomer Name:{[item['customer-name']]}
+              \nCustomer Address:{[item['customer-address']]}
+              \nCustomer Phone #:{[item['customer-phone']]}
+              \nStatus:{[item['status']]} """)
 
 
 
@@ -105,10 +109,10 @@ def orders_decision_tree():
         customer_address = str(input("What is your address?\n"))
         customer_phone = str(input("What is your phone number?\n"))
         statuses = ["preparing", "paid", "completed"]
-        status_length = len(statuses)
+        status_length = len(statuses) - 1
         for (i, item) in enumerate(statuses, start = 0):
             print(i, item)
-        chosen_status_ind = int(input(f"Please pick a status 0-{status_length}"))
+        chosen_status_ind = int(input(f"Please pick a status 0-{status_length}: "))
         chosen_status = statuses[chosen_status_ind]
         temp_dict = {
             "customer-name": customer_name,
@@ -119,7 +123,7 @@ def orders_decision_tree():
         customers_orders.append(temp_dict)
         print(customers_orders)
         show_orders()
-    elif user_choice_cache == 3:
+    elif user_choice_cache == 3 and customers_orders:
         order_list_length = len(customers_orders) - 1
         show_orders()
         user_change = int(input(f"Which order do you wish to change? 0-{order_list_length}: "))
@@ -127,14 +131,14 @@ def orders_decision_tree():
             print("That is not a valid input")
             user_change = int(input(f"Which item do you wish to change? 0-{order_list_length}: "))
         valid_keys = ["customer-name", "customer-address", "customer-phone", "status"]
-        key_change = str(input(f"What about the order would you like to update? {valid_keys}").lower())
+        key_change = str(input(f"What about the order would you like to update? {valid_keys}\n").lower())
         while key_change not in valid_keys:
             print("That is not a valid input.")
-            key_change = str(input(f"What about the order would you like to update? {valid_keys}").lower())
-        details_change = str(input("What do you wish to change it to?"))
+            key_change = str(input(f"What about the order would you like to update? {valid_keys}\n").lower())
+        details_change = str(input("What do you wish to change it to?\n"))
         customers_orders[user_change][key_change] = details_change
         show_orders()
-    elif user_choice_cache == 4:
+    elif user_choice_cache == 4 and customers_orders:
         order_list_length = len(customers_orders) - 1
         show_orders()
         user_change = int(input(f"Which order do you wish to delete? 0-{order_list_length}: "))
@@ -143,6 +147,8 @@ def orders_decision_tree():
             user_change = int(input(f"Which item do you wish to change? 0-{order_list_length}: "))
         customers_orders.pop(user_change)
         show_orders()
+    else:
+        print("No current orders")
 
 if __name__ == "__main__":
     X = "y"
@@ -166,10 +172,10 @@ if __name__ == "__main__":
         except ValueError:
             print("You have inputted the wrong data type, running the program again...")
             continue
-        X = str(input("Return to main menu? (y/n)\n").lower())
+        X = str(input("Continue? Return to main menu (y) or exit (n).\n").lower())
         while X not in ["y", "n"]:
             print("Please enter a valid input, y/n")
-            X = str(input("Return to main menu? (y/n)\n").lower())
+            X = str(input("Return to main menu? (y) or exit (n)\n").lower())
 
 print("Goodbye =)")
 sys.exit()
