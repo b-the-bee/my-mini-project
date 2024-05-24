@@ -1,3 +1,4 @@
+"""Adds functionality for inputting new orders, functionality needs to be added to select an item for the order, maybe that would require something else but gonna keep em separate for now."""
 customers_orders = []
 
 
@@ -32,9 +33,11 @@ def orders_decision_tree():
     user_choice_cache = orders_get_user_choice()
     if user_choice_cache == 0:
         print("Returning to the main menu, please select the appropriate inputs.\n\n\n\n\n\n")
+        return 1
     elif user_choice_cache == 1:
         order_list_length = len(customers_orders) - 1
         show_orders()
+        return 0
     elif user_choice_cache == 2:
         customer_name = str(input("What is your name?\n"))
         customer_address = str(input("What is your address?\n"))
@@ -54,6 +57,7 @@ def orders_decision_tree():
         customers_orders.append(temp_dict)
         print(customers_orders)
         show_orders()
+        return 0
     elif user_choice_cache == 3 and customers_orders:
         order_list_length = len(customers_orders) - 1
         show_orders()
@@ -69,6 +73,7 @@ def orders_decision_tree():
         details_change = str(input("What do you wish to change it to?\n"))
         customers_orders[user_change][key_change] = details_change
         show_orders()
+        return 0
     elif user_choice_cache == 4 and customers_orders:
         order_list_length = len(customers_orders) - 1
         show_orders()
@@ -78,5 +83,7 @@ def orders_decision_tree():
             user_change = int(input(f"Which item do you wish to change? 0-{order_list_length}: "))
         customers_orders.pop(user_change)
         show_orders()
+        return 0
     else:
         print("No current orders")
+        return 0

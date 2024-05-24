@@ -1,7 +1,13 @@
-product_list = ["White Americano","Black Americano", "Cappuccino", "Mocha", "Latte",
-                "Cortado", "Macchiato", "Iced Americano", "Iced Cappuccino", "Iced Mocha",
-                "Iced Latte", "Iced Cortado", "Iced Macchiato"]
+"""Adds functionality for adding, displaying updating and deleting products. Keeping them persistent in JSON"""
+import os
 
+try:
+    with open("data/product_list.txt", "r+", encoding="UTF-8") as my_file:
+        product_list = my_file.read()
+except FileNotFoundError as fnfe:
+    print(f"Unable to open file {fnfe}")
+
+print(product_list)
 def products_get_user_choice():
     """Get's the user's choice and returns the value to be cached later."""
     user_choice = input("\n\n\n\n\n\nPlease pick an operation:\nReturn to main menu (0).\
@@ -30,13 +36,17 @@ def products_decision_tree():
     user_choice_cache = products_get_user_choice()
     if user_choice_cache == 0:
         print("Returning to the main menu.\n\n\n\n\n\n")
+        return 1
     elif user_choice_cache == 1:
         product_list_length = len(product_list)
         show_products()
+        return 0
     elif user_choice_cache == 2:
         user_addition = str(input("What item do you wish to add to the list?\n"))
         product_list.append(user_addition)
         show_products()
+        my_file.write(product_list)
+        return 0
     elif user_choice_cache == 3:
         product_list_length = len(product_list) - 1
         show_products()
@@ -47,6 +57,8 @@ def products_decision_tree():
         item_change = str(input("What do you wish to change it to?\n"))
         product_list[user_change] = item_change
         show_products()
+        my_file.write(product_list)
+        return 0
     elif user_choice_cache == 4:
         product_list_length = len(product_list) - 1
         show_products()
@@ -56,3 +68,5 @@ def products_decision_tree():
             user_change = int(input(f"Which item do you wish to change? 0-{product_list_length}: "))
         product_list.pop(user_change)
         show_products()
+        my_file.write(product_list)
+        return 0
