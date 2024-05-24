@@ -15,12 +15,12 @@ def write_product_list(product_list):
         with open("data/product_list.csv", "w", encoding="UTF-8") as my_file:
             writer = csv.writer(my_file)
             writer.writerow(product_list)  # Write the list as a single row
-    except Exception as e:
-        print(f"Error writing to file: {e}")
+    except FileNotFoundError as fnfe:
+        print(f"Error writing to file: {fnfe}")
 
 def products_get_user_choice():
     """Gets the user's choice and returns the value to be cached later."""
-    user_choice = input("\n\n\n\n\n\nPlease pick an operation:\nReturn to main menu (0).\
+    user_choice = input("Please pick an operation:\nReturn to main menu (0).\
                         \nPrint product list (1).\
                         \nAdd Product to list (2).\nUpdate existing product (3).\
                         \nDelete Product(4). \n")

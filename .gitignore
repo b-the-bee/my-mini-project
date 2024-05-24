@@ -1,3 +1,4 @@
 *workspace*
 settings*
 *.docx
+__pycache__

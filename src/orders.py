@@ -4,14 +4,14 @@ customers_orders = []
 
 def orders_get_user_choice():
     """Get's the user's choice and returns the value to be cached later."""
-    user_choice = input("\n\n\n\n\n\nPlease pick an operation:\nReturn to main menu (0).\
+    user_choice = input("Please pick an operation:\nReturn to main menu (0).\
                         \nPrint order list (1).\
                         \nAdd Order to list (2).\nUpdate existing order (3).\
                         \nDelete Order(4). \n")
 
     while user_choice not in ["0", "1", "2", "3", "4"]:
         print("Please pick a valid number.")
-        user_choice = input("\n\n\n\n\n\nPlease pick an operation:\nReturn to main menu (0).\
+        user_choice = input("Please pick an operation:\nReturn to main menu (0).\
                         \nPrint order list (1).\
                         \nAdd Order to list (2).\nUpdate existing order (3).\
                         \nDelete Order(4). \n")
@@ -32,7 +32,7 @@ def orders_decision_tree():
     """Decision tree if user chooses o"""
     user_choice_cache = orders_get_user_choice()
     if user_choice_cache == 0:
-        print("Returning to the main menu, please select the appropriate inputs.\n\n\n\n\n\n")
+        print("Returning to the main menu...\n\n\n\n\n\n")
         return 1
     elif user_choice_cache == 1:
         order_list_length = len(customers_orders) - 1
@@ -42,7 +42,7 @@ def orders_decision_tree():
         customer_name = str(input("What is your name?\n"))
         customer_address = str(input("What is your address?\n"))
         customer_phone = str(input("What is your phone number?\n"))
-        statuses = ["preparing", "paid", "completed"]
+        statuses = ["preparing", "en-route", "paid", "completed"]
         status_length = len(statuses) - 1
         for (i, item) in enumerate(statuses, start = 0):
             print(i, item)
