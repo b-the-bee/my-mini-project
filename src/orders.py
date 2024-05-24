@@ -22,12 +22,12 @@ def show_orders():
     """Shows a list of saved orders, formatted in dictionaries"""
     print("Here is the list of the orders:")
     for (i, item) in enumerate(customers_orders, start = 0):
-        print(f"""Order: \n{i}. 
+        print(f"""Order: \n{i}.
               \nCustomer Name:{[item['customer-name']]}
               \nCustomer Address:{[item['customer-address']]}
               \nCustomer Phone #:{[item['customer-phone']]}
               \nStatus:{[item['status']]} """)
-        
+
 def orders_decision_tree():
     """Decision tree if user chooses o"""
     user_choice_cache = orders_get_user_choice()

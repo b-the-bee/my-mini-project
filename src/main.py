@@ -6,6 +6,7 @@ import products
 import orders
 import couriers
 def products_master_program():
+    """Manages products module"""
     stay_products = "y"
     while stay_products == "y":
         returned_value_p = int(products.products_decision_tree())
@@ -15,6 +16,7 @@ def products_master_program():
             stay_products = "n"
 
 def orders_master_program():
+    """Manages orders module"""
     stay_orders = "y"
     while stay_orders == "y":
         returned_value_o = int(orders.orders_decision_tree())
@@ -24,6 +26,7 @@ def orders_master_program():
             stay_orders = "n"
 
 def couriers_master_program():
+    """Manages couriers module"""
     stay_couriers = "y"
     while stay_couriers == "y":
         returned_value_c = int(couriers.couriers_decision_tree())
@@ -31,11 +34,11 @@ def couriers_master_program():
             stay_couriers = input("Would you like to stay on the courier management program? y/n: ").lower()
         else:
             stay_couriers = "n"
-    
+
 def main():
     """The main code"""
-    X = "y"
-    while X != "n":
+    x = "y"
+    while x != "n":
         try:
             function_choice = input("Please choose whether to access products (p) or access ordering function (o) or courier function (c): ").lower()
             while function_choice not in ["o", "p", "c"]:
@@ -53,10 +56,10 @@ def main():
             time.sleep(3)
             continue
 
-        X = input("Continue? Return to main menu (y) or exit (n).\n").lower()
-        while X not in ["y", "n"]:
+        x = input("Continue? Return to main menu (y) or exit (n).\n").lower()
+        while x not in ["y", "n"]:
             print("Please enter a valid input, y/n")
-            X = input("Return to main menu? (y) or exit (n)\n").lower()
+            x = input("Return to main menu? (y) or exit (n)\n").lower()
 
 if __name__ == "__main__":
     main()

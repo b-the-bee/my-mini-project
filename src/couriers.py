@@ -1,9 +1,11 @@
+"""Couriers management system"""
 import json
 
 # Initialise couriers
 couriers = []
 
 def read_courier_list():
+    """Reads courier list and returns it"""
     try:
         with open("data/couriers.json", "r", encoding="UTF-8") as my_file:
             courier_list = json.load(my_file)
@@ -16,6 +18,7 @@ def read_courier_list():
     return courier_list
 
 def write_courier_list(courier_list):
+    """Function for persisting courier list"""
     try:
         with open("data/couriers.json", "w", encoding="UTF-8") as my_file:
             json.dump(courier_list, my_file, indent=4)  # Write the list of dictionaries to the file
@@ -42,7 +45,7 @@ def show_couriers():
     """Shows a list of saved couriers, formatted in dictionaries"""
     print("Here is the list of the couriers:")
     for (i, item) in enumerate(couriers, start=0):
-        print(f"""Courier Number: {i}. 
+        print(f"""Courier Number: {i}.
               \nCourier Name: {item['courier-name']}
               \nTarget Address: {item['target-address']}
               \nCourier Phone #: {item['courier-phone']}
@@ -50,7 +53,6 @@ def show_couriers():
 
 def couriers_decision_tree():
     """Decision tree if user chooses an option"""
-    global couriers
     user_choice_cache = couriers_get_user_choice()
     if user_choice_cache == 0:
         print("Returning to the main menu, please select the appropriate inputs.\n\n\n\n\n\n")

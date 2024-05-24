@@ -1,6 +1,8 @@
+"""The products management module"""
 import csv
 
 def read_product_list():
+    """Reads the products csv and saves it to a list"""
     try:
         with open("data/product_list.csv", "r", encoding="UTF-8") as my_file:
             reader = csv.reader(my_file, delimiter=",")
@@ -11,6 +13,7 @@ def read_product_list():
     return product_list
 
 def write_product_list(product_list):
+    """Writes to the products csv"""
     try:
         with open("data/product_list.csv", "w", encoding="UTF-8") as my_file:
             writer = csv.writer(my_file)
