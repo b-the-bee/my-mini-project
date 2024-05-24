@@ -1,7 +1,6 @@
 """The starting code for the mini project"""
 
 import sys
-import os
 import time
 import products
 import orders
