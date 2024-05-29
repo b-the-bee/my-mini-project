@@ -1,23 +1,24 @@
 """The products management module"""
-import csv
+import json
 
 def read_product_list():
-    """Reads the products csv and saves it to a list"""
+    """Reads product list and returns it"""
     try:
-        with open("data/product_list.csv", "r", encoding="UTF-8") as my_file:
-            reader = csv.reader(my_file, delimiter=",")
-            product_list = next(reader)  # Read the first row as a list of products
+        with open("data/products.json", "r", encoding="UTF-8") as my_file:
+            product_list = json.load(my_file)
     except FileNotFoundError as fnfe:
         print(f"Unable to open file: {fnfe}")
+        product_list = []
+    except json.JSONDecodeError as jde:
+        print(f"Error decoding JSON: {jde}")
         product_list = []
     return product_list
 
 def write_product_list(product_list):
-    """Writes to the products csv"""
+    """Function for persisting product list"""
     try:
-        with open("data/product_list.csv", "w", encoding="UTF-8") as my_file:
-            writer = csv.writer(my_file)
-            writer.writerow(product_list)  # Write the list as a single row
+        with open("data/products.json", "w", encoding="UTF-8") as my_file:
+            json.dump(product_list, my_file, indent=4)  # Write the list of dictionaries to the file
     except FileNotFoundError as fnfe:
         print(f"Error writing to file: {fnfe}")
 
@@ -54,12 +55,17 @@ def products_decision_tree():
         show_products(product_list)
         return 0
     elif user_choice_cache == 2:
-        user_addition = input("What item do you wish to add to the list?\n")
-        product_list.append(user_addition)
+        product_name = input("What is the name of the item do you wish to add to the list?\n")
+        product_price = float(input("What is the value of the product? (float)"))
+        temp_dict = {
+            "Item": product_name,
+            "Price": product_price
+        }
+        product_list.append(temp_dict)
         show_products(product_list)
         write_product_list(product_list)
         return 0
-    elif user_choice_cache == 3:
+    elif user_choice_cache == 3 and product_list:
         show_products(product_list)
         product_list_length = len(product_list) - 1
         user_change = int(input(f"Which item do you wish to change? 0-{product_list_length}: "))
@@ -67,11 +73,18 @@ def products_decision_tree():
             print("That is not a valid input")
             user_change = int(input(f"Which item do you wish to change? 0-{product_list_length}: "))
         item_change = input("What do you wish to change it to?\n")
-        product_list[user_change] = item_change
+        valid_keys = ["item", "price",]
+        key_change = str(input(f"What about the product would you like to update? {valid_keys}\n").lower())
+        while key_change not in valid_keys:
+            print("That is not a valid input.")
+            key_change = str(input(f"What about the courier would you like to update? {valid_keys}\n").lower())
+        details_change = str(input("What do you wish to change it to?\n"))
+        product_list[item_change][key_change] = details_change
+        write_product_list(product_list)
         show_products(product_list)
         write_product_list(product_list)
         return 0
-    elif user_choice_cache == 4:
+    elif user_choice_cache == 4 and product_list:
         show_products(product_list)
         product_list_length = len(product_list) - 1
         user_change = int(input(f"Which item do you wish to delete? 0-{product_list_length}: "))

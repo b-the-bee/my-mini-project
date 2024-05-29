@@ -108,6 +108,3 @@ def couriers_decision_tree():
     else:
         print("No current couriers")
         return 0
-
-# Read initial couriers from the file
-couriers = read_courier_list()

@@ -1,6 +1,27 @@
 """Adds functionality for inputting new orders, functionality needs to be added to select an item for the order, maybe that would require something else but gonna keep em separate for now."""
+import json
 customers_orders = []
 
+def read_order_list():
+    """Reads product list and returns it"""
+    try:
+        with open("data/orders.json", "r", encoding="UTF-8") as my_file:
+            product_list = json.load(my_file)
+    except FileNotFoundError as fnfe:
+        print(f"Unable to open file: {fnfe}")
+        product_list = []
+    except json.JSONDecodeError as jde:
+        print(f"Error decoding JSON: {jde}")
+        product_list = []
+    return product_list
+
+def write_order_list(order_list):
+    """Function for persisting product list"""
+    try:
+        with open("data/orders.json", "w", encoding="UTF-8") as my_file:
+            json.dump(order_list, my_file, indent=4)  # Write the list of dictionaries to the file
+    except FileNotFoundError as fnfe:
+        print(f"Error writing to file: {fnfe}")
 
 def orders_get_user_choice():
     """Get's the user's choice and returns the value to be cached later."""
@@ -42,7 +63,7 @@ def orders_decision_tree():
         customer_name = str(input("What is your name?\n"))
         customer_address = str(input("What is your address?\n"))
         customer_phone = str(input("What is your phone number?\n"))
-        statuses = ["preparing", "en-route", "paid", "completed"]
+        statuses = ["paid", "preparing", "en-route", "completed"]
         status_length = len(statuses) - 1
         for (i, item) in enumerate(statuses, start = 0):
             print(i, item)
@@ -55,8 +76,8 @@ def orders_decision_tree():
             "status": chosen_status,
         }
         customers_orders.append(temp_dict)
-        print(customers_orders)
         show_orders()
+        write_order_list(customers_orders)
         return 0
     elif user_choice_cache == 3 and customers_orders:
         order_list_length = len(customers_orders) - 1
@@ -70,9 +91,17 @@ def orders_decision_tree():
         while key_change not in valid_keys:
             print("That is not a valid input.")
             key_change = str(input(f"What about the order would you like to update? {valid_keys}\n").lower())
-        details_change = str(input("What do you wish to change it to?\n"))
+        if key_change == "status":
+            status_length = len(statuses) - 1
+            for (i, item) in enumerate(statuses, start = 0):
+                print(i, item)
+            chosen_status_ind = int(input(f"Please pick a status 0-{status_length}: "))
+            chosen_status = statuses[chosen_status_ind]
+        else:
+            details_change = str(input("What do you wish to change it to?\n"))
         customers_orders[user_change][key_change] = details_change
         show_orders()
+        write_order_list(customers_orders)
         return 0
     elif user_choice_cache == 4 and customers_orders:
         order_list_length = len(customers_orders) - 1
@@ -83,6 +112,7 @@ def orders_decision_tree():
             user_change = int(input(f"Which item do you wish to change? 0-{order_list_length}: "))
         customers_orders.pop(user_change)
         show_orders()
+        write_order_list(customers_orders)
         return 0
     else:
         print("No current orders")

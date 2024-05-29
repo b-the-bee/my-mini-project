@@ -1,0 +1,58 @@
+[
+    {
+        "item": "White Americano",
+        "price": 2.30
+    },
+    {
+        "item": " Iced Americano",
+        "price": 2.30
+    },
+    {
+        "item": " Black Americano",
+        "price": 2.20
+    },
+    {
+        "item": " Iced Cappuccino",
+        "price": 2.40
+    },
+    {
+        "item": "Cappuccino",
+        "price": 2.40
+    },
+    {
+        "item": "Iced Mocha",
+        "price": 2.60
+    },
+    {
+        "item": "Mocha",
+        "price": 2.60
+    },
+    {
+        "item": "Iced Latte",
+        "price": 2.40
+    },
+    {
+        "item": "Latte",
+        "price": 2.40
+    },
+    {
+        "item": "Iced Cortado",
+        "price": 2.10
+    },
+    {
+        "item": "Cortado",
+        "price": 2.10
+    },
+    {
+        "item": "Iced Macchiato",
+        "price": 2.05
+    },
+    {
+        "item": "Macchiato",
+        "price": 2.05
+    },
+    {
+        "item": "Frappe",
+        "price": 3.05
+    }
+]
