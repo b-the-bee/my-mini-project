@@ -40,8 +40,10 @@ def products_get_user_choice():
 def show_products(product_list):
     """Generates an indexed list of products."""
     print("Here is the list of the products:")
-    for i, item in enumerate(product_list):
-        print(f"{i}: {item}")
+    for (i, item) in enumerate(product_list):
+        print(f"""\n{i}
+              Product: {item["item"]}
+              Price: £{item["price"]}""")
 
 def products_decision_tree():
     """The decision tree for the products program goes through to provide different end user functions"""
@@ -56,7 +58,7 @@ def products_decision_tree():
         return 0
     elif user_choice_cache == 2:
         product_name = input("What is the name of the item do you wish to add to the list?\n")
-        product_price = float(input("What is the value of the product? (float)"))
+        product_price = float(input("What is the price of the product?"))
         temp_dict = {
             "Item": product_name,
             "Price": product_price
