@@ -1,0 +1,16 @@
+[
+    {
+        "customer-name": "Terry",
+        "customer-address": "Firic",
+        "customer-phone": "90",
+        "items": "10, 9",
+        "status": "preparing"
+    },
+    {
+        "customer-name": "Terop",
+        "customer-address": "Perot",
+        "customer-phone": "734",
+        "items": "11, 10, 9",
+        "status": "preparing"
+    }
+]

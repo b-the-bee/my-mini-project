@@ -40,16 +40,18 @@ def main():
     x = "y"
     while x != "n":
         try:
-            function_choice = input("Please choose whether to access products (p) or access ordering function (o) or courier function (c): ").lower()
-            while function_choice not in ["o", "p", "c"]:
+            function_choice = input("Please choose whether to access products (p) or access ordering function (o) or courier function (c) or exit(n): ").lower()
+            while function_choice not in ["o", "p", "c", "n"]:
                 print("That is not a valid choice.")
-                function_choice = input("Please choose whether to access products (p) or access ordering function (o): ").lower()
+                function_choice = input("Please choose whether to access products (p) or access ordering function (o) or exit(n): ").lower()
             if function_choice == "p":
                 products_master_program()
             elif function_choice == "o":
                 orders_master_program()
             elif function_choice == "c":
                 couriers_master_program()
+            else:
+                break
         except ValueError:
             time.sleep(4)
             print("You have inputted the wrong data type, running the program again...")
