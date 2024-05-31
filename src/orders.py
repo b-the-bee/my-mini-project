@@ -45,11 +45,11 @@ def show_orders(orders_list):
     print("Here is the list of the orders:")
     for (i, item) in enumerate(orders_list, start = 0):
         print(f"""Order: \n{i}.
-              \nCustomer Name:{[item['customer-name']]}
-              \nCustomer Address:{[item['customer-address']]}
-              \nCustomer Phone #:{[item['customer-phone']]}
-              \nCustomer Items :{[item['items']]}
-              \nStatus:{[item['status']]}\n\n """)
+              \nCustomer Name: {item['customer-name']}
+              \nCustomer Address: {item['customer-address']}
+              \nCustomer Phone #: {item['customer-phone']}
+              \nCustomer Items : {item['items']}
+              \nStatus: {item['status']}\n\n """)
 
 def orders_decision_tree():
     """Decision tree if user chooses o"""

@@ -1,14 +1,8 @@
 [
     {
-        "courier-name": "Rob Banks",
-        "target-address": "The Bank",
-        "courier-phone": "999",
-        "status": "completed"
-    },
-    {
-        "courier-name": "Steve Bridges",
-        "target-address": "The Bridge",
-        "courier-phone": "0-0",
+        "courier-name": "Steve",
+        "target-address": "Arun",
+        "courier-phone": "099",
         "status": "delayed"
     }
 ]

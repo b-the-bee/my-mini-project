@@ -12,5 +12,12 @@
         "customer-phone": "734",
         "items": "11, 10, 9",
         "status": "preparing"
+    },
+    {
+        "customer-name": "Arun",
+        "customer-address": "Arun",
+        "customer-phone": "Arun",
+        "items": "10, 2",
+        "status": "preparing"
     }
 ]
