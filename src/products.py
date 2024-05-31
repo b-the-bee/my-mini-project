@@ -60,8 +60,8 @@ def products_decision_tree():
         product_name = input("What is the name of the item do you wish to add to the list?\n")
         product_price = float(input("What is the price of the product?"))
         temp_dict = {
-            "Item": product_name,
-            "Price": product_price
+            "item": product_name,
+            "price": product_price
         }
         product_list.append(temp_dict)
         show_products(product_list)
@@ -74,14 +74,12 @@ def products_decision_tree():
         while user_change < 0 or user_change > product_list_length:
             print("That is not a valid input")
             user_change = int(input(f"Which item do you wish to change? 0-{product_list_length}: "))
-        item_change = input("What do you wish to change it to?\n")
         valid_keys = ["item", "price",]
         key_change = str(input(f"What about the product would you like to update? {valid_keys}\n").lower())
         while key_change not in valid_keys:
             print("That is not a valid input.")
             key_change = str(input(f"What about the courier would you like to update? {valid_keys}\n").lower())
         details_change = str(input("What do you wish to change it to?\n"))
-        product_list[item_change][key_change] = details_change
         write_product_list(product_list)
         show_products(product_list)
         write_product_list(product_list)
