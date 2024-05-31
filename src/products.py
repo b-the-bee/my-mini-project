@@ -43,7 +43,7 @@ def show_products(product_list):
     for (i, item) in enumerate(product_list):
         print(f"""\n{i}
               Product: {item["item"]}
-              Price: £{item["price"]}""")
+              Price: £{item["price"]: .2f}""")
 
 def products_decision_tree():
     """The decision tree for the products program goes through to provide different end user functions"""
