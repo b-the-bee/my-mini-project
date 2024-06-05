@@ -1,8 +1,7 @@
 [
     {
         "courier-name": "Steve",
-        "target-address": "Arun",
-        "courier-phone": "099",
-        "status": "delayed"
+        "courier-phone": "099999912345",
+        "status": "stand-by"
     }
 ]

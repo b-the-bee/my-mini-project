@@ -90,7 +90,12 @@ def couriers_decision_tree():
         while key_change not in valid_keys:
             print("That is not a valid input.")
             key_change = str(input(f"What about the courier would you like to update? {valid_keys}\n").lower())
+        if key_change == "status":
+            print(f"Statuses are {statuses}")
         details_change = str(input("What do you wish to change it to?\n"))
+        while key_change == "status" and details_change not in statuses:
+            print("That is not a valid status")
+            details_change = str(input("What do you wish to change it to?\n"))
         couriers[user_change][key_change] = details_change
         write_courier_list(couriers)  # Write to file after updating
         show_couriers()
