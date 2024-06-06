@@ -1,6 +1,6 @@
 SET NAMES utf8mb4;
 
-INSERT INTO `items` (`id`, `item`, `price`) VALUES
+INSERT INTO `items` (`item_id`, `item`, `price`) VALUES
 ("P001",	'White Americano',	2.30),
 ("P002",	' Iced Americano',	2.30),
 ("P003",	' Black Americano',	2.20),
