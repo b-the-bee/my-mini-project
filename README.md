@@ -5,9 +5,9 @@ Docker 26.1.1
 
 Python 3.12.1
 
-    Pip 24.0
+Pip 24.0
     
-    Requirements in requirements file (details in install instructions)
+Requirements in requirements file (details in install instructions)
     
 VSCode or similar IDE
 
