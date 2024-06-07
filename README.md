@@ -1,4 +1,4 @@
-# my-mini-project
+# CLI Café Order Management Tool with MySQL Database (Python)
 
 # Requirements
 Docker 26.1.1
