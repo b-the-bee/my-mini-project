@@ -51,7 +51,9 @@ def increment_and_save_id(file_path, id_type):
 # Path to the file where the data will be saved
 default_file_path = 'ids.json'
 
+# ----------------------
 # Items/Products Functions
+# ----------------------
 
 def insert_new_item(item, price):
     new_item_id = increment_and_save_id(file_path=default_file_path, id_type='item')
@@ -104,7 +106,10 @@ def get_correct_product_ids():
             product_id_list = [row[0] for row in product_id_list]
     return product_id_list
 
+# ----------------------
 # Orders Functions
+# ----------------------
+
 def insert_new_order(orders_status, customers_name, customers_address, customers_phone, chosens_products):
     new_order_id = increment_and_save_id(file_path=default_file_path, id_type='courier')
     modifier1 = str(random.randint(10, 99))
@@ -152,7 +157,8 @@ def insert_new_order(orders_status, customers_name, customers_address, customers
                 """
                 values = (this_order_id, item)
                 cursor.execute(insert_sql, values)
-                connection.commit()        
+                connection.commit()
+    
 def read_orders():
     with pymysql.connect(
         host = host_name,
@@ -210,6 +216,26 @@ def read_order_items():
         
         # Print the table
         print(table)
+
+def read_all_orders():
+    read_orders()
+    read_customer_details()
+    read_order_items()
+
+def get_correct_order_ids():
+    with pymysql.connect(
+        host=host_name,
+        user=user_name,
+        password=user_password,
+        database=database_name
+    ) as connection:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT order_id FROM orders")
+            order_id_list = cursor.fetchall()
+            # Extract item_ids from the fetched rows
+            order_id_list = [row[0] for row in order_id_list]
+    return order_id_list
+
 def update_customer_details(order_id, customer_name, customer_phone, customer_address):
     if customer_name:
         with pymysql.connect(
@@ -261,7 +287,59 @@ def update_customer_details(order_id, customer_name, customer_phone, customer_ad
                 connection.commit()   
 
 
-def get_correct_order_ids():
+def update_order_status(order_id, status):
+    if status:
+        with pymysql.connect(
+            host = host_name,
+            user = user_name,
+            password = user_password,
+            database = database_name,
+        ) as connection:
+            with connection.cursor() as cursor:
+                update_sql = """
+                UPDATE orders
+                SET order_status = %s
+                WHERE order_id = %s
+                """
+                values = (status, order_id)
+                cursor.execute(update_sql, values)
+                connection.commit()
+
+def update_order_items(order_id, item_change_to, item_change_from):
+    with pymysql.connect(
+        host = host_name,
+        user = user_name,
+        password = user_password,
+        database = database_name,
+    ) as connection:
+        with connection.cursor() as cursor:
+            update_sql = """
+            UPDATE order_items
+            SET item_ordered = %s
+            WHERE order_id = %s AND item_ordered = %s
+            """
+            values = (item_change_to, order_id, item_change_from)
+            cursor.execute(update_sql, values)
+            connection.commit()
+
+def insert_new_items(this_order_id, chosens_products):
+    for item in chosens_products:
+        with pymysql.connect(
+            host = host_name,
+            user = user_name,
+            password = user_password,
+            database = database_name,
+        ) as connection:
+            with connection.cursor() as cursor:
+                insert_sql = """
+                INSERT INTO order_items (order_id, item_ordered)
+                VALUES (%s, %s)
+                """
+                values = (this_order_id, item)
+                cursor.execute(insert_sql, values)
+                connection.commit()    
+                
+def get_available_item_ids_on_orders(order_id):
     with pymysql.connect(
         host=host_name,
         user=user_name,
@@ -269,13 +347,41 @@ def get_correct_order_ids():
         database=database_name
     ) as connection:
         with connection.cursor() as cursor:
-            cursor.execute("SELECT order_id FROM items")
-            order_id_list = cursor.fetchall()
+            sql_read ="""
+            SELECT item_ordered from order_items WHERE order_id = %s
+            """
+            value = order_id
+            cursor.execute(sql_read, value)
+            product_id_list = cursor.fetchall()
             # Extract item_ids from the fetched rows
-            order_id_list = [row[0] for row in order_id_list]
-    return order_id_list
+            product_id_list = [row[0] for row in product_id_list]
+    return product_id_list
 
+
+
+def delete_order(order_id):
+    with pymysql.connect(
+        host=host_name,
+        user=user_name,
+        password=user_password,
+        database=database_name
+    ) as connection:
+        with connection.cursor() as cursor:
+            delete_order_customer_details_sql = "DELETE FROM order_customer_details WHERE order_id = %s;"
+            delete_order_items_sql = "DELETE FROM order_items WHERE order_id = %s;"
+            delete_order_sql = "DELETE FROM orders WHERE order_id = %s;"
+            
+            cursor.execute(delete_order_customer_details_sql, (order_id,))
+            cursor.execute(delete_order_items_sql, (order_id,))
+            cursor.execute(delete_order_sql, (order_id,))
+            
+        connection.commit()
+            
+
+# ----------------------
 # Couriers Functions
+# ----------------------
+
 def insert_new_courier(courier_name, courier_phone, courier_status):
     new_courier_id = increment_and_save_id(file_path=default_file_path, id_type='courier')
     with pymysql.connect(
@@ -330,3 +436,4 @@ def read_all_couriers():
         
         # Print the table
         print(table)
+        

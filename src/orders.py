@@ -1,8 +1,10 @@
 """Adds functionality for inputting new orders, functionality needs to be added to select an item for the order, maybe that would require something else but gonna keep em separate for now."""
 import json
 import products
+import pymysql
 from database_handler import get_correct_product_ids, read_all_items, read_all_orders, insert_new_order, get_correct_order_ids
-from database_handler import update_customer_details
+from database_handler import update_customer_details, update_order_status, read_customer_details, read_orders, read_order_items
+from database_handler import get_available_item_ids_on_orders, insert_new_items, delete_order, update_order_items
 def orders_get_user_choice():
     """Get's the user's choice and returns the value to be cached later."""
     user_choice = input("Please pick an operation:\nReturn to main menu (0).\
@@ -38,50 +40,107 @@ def orders_decision_tree():
         i = 0
         chosen_product_list = []
         while keep_choosing_products == "y":
-            # Need to make a list then for item in list add at the end with everything else for atomicity
-            chosen_product = input(f"What is the  have #{i} they selected? (or type ls for product list)\n")
-            while chosen_product not in correct_product_ids or chosen_product != "ls":
-                print("That is not a valid product")
+            i +=1
+            chosen_product = input(f"What is the  have #{i} item they selected? (or type ls for product list)\n")
             while chosen_product == "ls":
                 read_all_items()
+                chosen_product = input(f"What is the  have #{i} they selected? (or type ls for product list)\n")
+            while chosen_product not in correct_product_ids:
+                print("That is not a valid product")
+                chosen_product = input(f"What is the  have #{i} item they selected? (or type ls for product list)\n")
             chosen_product_list.append(chosen_product)
-            i +=1
+            keep_choosing_products = input("Would you like to keep adding items to their order y/n?: ")
         statuses = ["paid", "preparing", "en-route", "completed"]
         status_length = len(statuses) - 1
         for (i, item) in enumerate(statuses, start = 0):
             print(i, item)
         chosen_status_ind = int(input(f"Please pick a status 0-{status_length}: "))
         chosen_status = statuses[chosen_status_ind]
-        insert_new_order(chosen_status, customer_name, customer_address, customer_phone, chosen_product_list)
+        insert_new_order(chosen_status, customer_name, customer_address, customer_phone, chosen_product_list)   
         read_all_orders()
         return 0
     elif user_choice_cache == 3:
         read_all_orders()
-        correct_order_ids = get_correct_order_ids()
-        user_change = str(input("Which order would you like to change, please select the order id"))
+        try:
+            correct_order_ids = get_correct_order_ids()
+        except pymysql.err.OperationalError:
+            print("There are no current orders, returning to the menu\n")
+            return 0
+        user_change = str(input("Which order would you like to change, please select the order id: ").upper())
         while user_change not in correct_order_ids:
             print("That is not a valid order id")
-            user_change = str(input("Which order would you like to change, please select the order id"))
-        which_order_table = str(input("Which table would you like to change 'status', 'details' or 'items'").lower())
+            user_change = str(input("Which order would you like to change, please select the order id?: "))
+        which_order_table = str(input("Which table would you like to change 'status', 'details' or 'items'?: ").lower())
         while which_order_table not in ["status", "items", "details"]:
             print("Please select items or details")
             which_order_table = str(input("Which table would you like to change 'status', 'details' or 'items'").lower())
         if which_order_table == "details":
+            read_customer_details()
             changed_customer_name = str(input("What do you wish to change the customer name to? or hit enter to leave the same:\n"))
             changed_customer_phone = str(input("What do you wish to change the customer phone number to? or hit enter to leave the same:\n"))
             changed_customer_address = str(input("What do you wish to change the customer address to? or hit enter to leave the same:\n"))
             update_customer_details(user_change, changed_customer_name, changed_customer_phone, changed_customer_address)
+        elif which_order_table == "status":
+            read_orders()
+            statuses = ["paid", "preparing", "en-route", "completed"]
+            status_length = len(statuses) - 1
+            for (i, item) in enumerate(statuses, start = 0):
+                print(i, item)
+            chosen_status_ind = int(input(f"Please pick a status 0-{status_length}: "))
+            changed_status = statuses[chosen_status_ind]
+            update_order_status(user_change, changed_status)
+        elif which_order_table == "items":
+            correct_product_ids = get_correct_product_ids()
+            add_new_items_to_order = str(input("Would you like to add new items to this order y/n?\n"))
+            if add_new_items_to_order == "n":
+                print("Continuing...\n")
+            elif add_new_items_to_order == "y":
+                keep_choosing_products = "y"
+                correct_product_ids = get_correct_product_ids()
+                i = 0
+                chosen_product_list = []
+                while keep_choosing_products == "y":
+                    i +=1
+                    chosen_product = input(f"What is the  have #{i} item they selected? (or type ls for product list)\n")
+                    while chosen_product == "ls":
+                        read_all_items()
+                        chosen_product = input(f"What is the  have #{i} they selected? (or type ls for product list)\n")
+                    while chosen_product not in correct_product_ids:
+                        print("That is not a valid product")
+                        chosen_product = input(f"What is the  have #{i} item they selected? (or type ls for product list)\n")
+                    chosen_product_list.append(chosen_product)
+                    keep_choosing_products = input("Would you like to keep adding items to their order y/n?: ")
+                insert_new_items(user_change, chosen_product_list)
+            read_order_items()
+            available_to_change = get_available_item_ids_on_orders(user_change)
+            item_to_change_from = str(input("Which item code of this order would you like to change? or hit enter to go to the menu\n"))
+            if not item_to_change_from:
+                return 0
+            while item_to_change_from not in available_to_change:
+                print("That is not a valid item to change")
+            item_to_change_to = str(input("Please enter the item ID you would like to change the item to? or type ls for a list of products\n"))
+            while item_to_change_to == "ls":
+                read_all_items()
+                item_to_change_to = input("Please enter the item ID you would like to change the item to? (or type ls for product list)\n") 
+            while item_to_change_to not in correct_product_ids:
+                print("That is not a valid product")
+                item_to_change_to = input("Please enter the item ID you would like to change the item to? (or type ls for product list)\n")
+            update_order_items(user_change, item_to_change_to, item_to_change_from)
+            read_order_items()
         return 0
-    elif user_choice_cache == 4 and order_list:
-        order_list_length = len(order_list) - 1
-        show_orders(order_list)
-        user_change = int(input(f"Which order do you wish to delete? 0-{order_list_length}: "))
-        while user_change < 0 or user_change > order_list_length:
-            print("That is not a valid input")
-            user_change = int(input(f"Which item do you wish to change? 0-{order_list_length}: "))
-        order_list.pop(user_change)
-        show_orders(order_list)
-        write_order_list(order_list)
+    elif user_choice_cache == 4:
+        read_all_orders()
+        try:
+            correct_order_ids = get_correct_order_ids()
+        except pymysql.err.OperationalError:
+            print("There are no current orders, returning to the menu\n")
+            return 0
+        user_change = str(input("Which order would you like to delete, please select the order id: ").upper())
+        while user_change not in correct_order_ids:
+            print("That is not a valid order id")
+            user_change = str(input("Which order would you like to change, please select the order id"))
+        delete_order(user_change)
+        read_all_orders()
         return 0
     else:
         print("No current orders")
