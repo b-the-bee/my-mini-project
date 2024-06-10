@@ -45,7 +45,7 @@ CREATE TABLE items (
 CREATE TABLE order_items (
   order_id VARCHAR(255) NOT NULL,
   item_ordered VARCHAR(255) NOT NULL,
-  PRIMARY KEY (order_id, item_ordered),
+  PRIMARY KEY (item_ordered, order_id),
   FOREIGN KEY (order_id) REFERENCES orders(order_id),
   FOREIGN KEY (item_ordered) REFERENCES items(item_id)
 );

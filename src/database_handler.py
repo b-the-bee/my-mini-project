@@ -49,7 +49,7 @@ def increment_and_save_id(file_path, id_type):
     return new_id
 
 # Path to the file where the data will be saved
-default_file_path = 'ids.json'
+default_file_path = 'data/ids.json'
 
 # ----------------------
 # Items/Products Functions
@@ -111,7 +111,7 @@ def get_correct_product_ids():
 # ----------------------
 
 def insert_new_order(orders_status, customers_name, customers_address, customers_phone, chosens_products):
-    new_order_id = increment_and_save_id(file_path=default_file_path, id_type='courier')
+    new_order_id = increment_and_save_id(file_path=default_file_path, id_type='order')
     modifier1 = str(random.randint(10, 99))
     modifier2 = ''.join(random.choices(string.ascii_uppercase, k=2))
     this_order_id = str(new_order_id + modifier1 + modifier2)
@@ -158,6 +158,7 @@ def insert_new_order(orders_status, customers_name, customers_address, customers
                 values = (this_order_id, item)
                 cursor.execute(insert_sql, values)
                 connection.commit()
+    return this_order_id
     
 def read_orders():
     with pymysql.connect(
@@ -436,4 +437,115 @@ def read_all_couriers():
         
         # Print the table
         print(table)
-        
+
+def get_correct_courier_ids():
+    with pymysql.connect(
+        host=host_name,
+        user=user_name,
+        password=user_password,
+        database=database_name
+    ) as connection:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT courier_id FROM couriers")
+            order_id_list = cursor.fetchall()
+            # Extract item_ids from the fetched rows
+            order_id_list = [row[0] for row in order_id_list]
+    return order_id_list
+
+def update_courier_details(courier_id, courier_name, courier_phone, courier_status):
+    if courier_name:
+        with pymysql.connect(
+            host = host_name,
+            user = user_name,
+            password = user_password,
+            database = database_name,
+        ) as connection:
+            with connection.cursor() as cursor:
+                update_sql = """
+                UPDATE couriers
+                SET courier_name = %s
+                WHERE courier_id = %s
+                """
+                values = (courier_name, courier_id)
+                cursor.execute(update_sql, values)
+                connection.commit()       
+    if courier_phone:
+        with pymysql.connect(
+            host = host_name,
+            user = user_name,
+            password = user_password,
+            database = database_name,
+        ) as connection:
+            with connection.cursor() as cursor:
+                update_sql = """
+                UPDATE couriers
+                SET courier_phone = %s
+                WHERE courier_id = %s
+                """
+                values = (courier_phone, courier_id)
+                cursor.execute(update_sql, values)
+                connection.commit()   
+    if courier_status:
+        with pymysql.connect(
+            host = host_name,
+            user = user_name,
+            password = user_password,
+            database = database_name,
+        ) as connection:
+            with connection.cursor() as cursor:
+                update_sql = """
+                UPDATE couriers
+                SET courier_status = %s
+                WHERE courier_id = %s
+                """
+                values = (courier_status, courier_id)
+                cursor.execute(update_sql, values)
+                connection.commit()
+
+def update_courier_order(courier_id, order_id):
+    if order_id:
+        with pymysql.connect(
+            host=host_name,
+            user=user_name,
+            password=user_password,
+            database=database_name,
+        ) as connection:
+            with connection.cursor() as cursor:
+                update_sql = """
+                INSERT INTO courier_delivery_details (courier_id, order_id)
+                VALUES (%s, %s)
+                ON DUPLICATE KEY UPDATE order_id = VALUES(order_id)
+                """
+                values = (courier_id, order_id)
+                cursor.execute(update_sql, values)
+                connection.commit()
+
+def delete_courier(courier_id):
+    with pymysql.connect(
+        host=host_name,
+        user=user_name,
+        password=user_password,
+        database=database_name
+    ) as connection:
+        with connection.cursor() as cursor:
+            delete_couriers_sql = "DELETE FROM couriers WHERE courier_id = %s;"
+            delete_courier_delivery_sql = "DELETE FROM courier_delivery_details WHERE courier_id = %s;"
+
+            cursor.execute(delete_couriers_sql, (courier_id,))
+            cursor.execute(delete_courier_delivery_sql, (courier_id,))
+
+        connection.commit()
+
+def get_valid_courier_order_ids():
+    with pymysql.connect(
+        host=host_name,
+        user=user_name,
+        password=user_password,
+        database=database_name
+    ) as connection:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT order_id FROM courier_delivery_details")
+            order_id_list = cursor.fetchall()
+            # Extract item_ids from the fetched rows
+            order_id_list = [row[0] for row in order_id_list]
+    return order_id_list

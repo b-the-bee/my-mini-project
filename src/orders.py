@@ -1,23 +1,24 @@
 """Adds functionality for inputting new orders, functionality needs to be added to select an item for the order, maybe that would require something else but gonna keep em separate for now."""
-import json
-import products
 import pymysql
 from database_handler import get_correct_product_ids, read_all_items, read_all_orders, insert_new_order, get_correct_order_ids
 from database_handler import update_customer_details, update_order_status, read_customer_details, read_orders, read_order_items
 from database_handler import get_available_item_ids_on_orders, insert_new_items, delete_order, update_order_items
+from database_handler import read_all_couriers, get_correct_courier_ids, update_courier_order, update_courier_details
 def orders_get_user_choice():
     """Get's the user's choice and returns the value to be cached later."""
     user_choice = input("Please pick an operation:\nReturn to main menu (0).\
                         \nPrint order list (1).\
                         \nAdd Order to list (2).\nUpdate existing order (3).\
-                        \nDelete Order(4). \n")
+                        \nDelete Order(4). \
+                        \nAssign courier to an order(5)\n")
 
-    while user_choice not in ["0", "1", "2", "3", "4"]:
+    while user_choice not in ["0", "1", "2", "3", "4", "5"]:
         print("Please pick a valid number.")
         user_choice = input("Please pick an operation:\nReturn to main menu (0).\
                         \nPrint order list (1).\
                         \nAdd Order to list (2).\nUpdate existing order (3).\
-                        \nDelete Order(4). \n")
+                        \nDelete Order(4). \
+                        \nAssign courier to an order(5)\n")
     user_choice = int(user_choice)
     return user_choice
     
@@ -41,13 +42,13 @@ def orders_decision_tree():
         chosen_product_list = []
         while keep_choosing_products == "y":
             i +=1
-            chosen_product = input(f"What is the  have #{i} item they selected? (or type ls for product list)\n")
-            while chosen_product == "ls":
+            chosen_product = str(input(f"What is the  have #{i} item they selected? (or type ls for product list)\n").upper())
+            if chosen_product == "LS":
                 read_all_items()
-                chosen_product = input(f"What is the  have #{i} they selected? (or type ls for product list)\n")
+                chosen_product = str(input(f"What is the  have #{i} item they selected?\n").upper())
             while chosen_product not in correct_product_ids:
                 print("That is not a valid product")
-                chosen_product = input(f"What is the  have #{i} item they selected? (or type ls for product list)\n")
+                chosen_product = str(input(f"What is the  have #{i} item they selected?\n").upper())
             chosen_product_list.append(chosen_product)
             keep_choosing_products = input("Would you like to keep adding items to their order y/n?: ")
         statuses = ["paid", "preparing", "en-route", "completed"]
@@ -56,8 +57,26 @@ def orders_decision_tree():
             print(i, item)
         chosen_status_ind = int(input(f"Please pick a status 0-{status_length}: "))
         chosen_status = statuses[chosen_status_ind]
-        insert_new_order(chosen_status, customer_name, customer_address, customer_phone, chosen_product_list)   
-        read_all_orders()
+        this_order_id = insert_new_order(chosen_status, customer_name, customer_address, customer_phone, chosen_product_list)
+        assign_courier_now = str(input("Do you wish to assign a courier to this order now? y/n\n").lower())
+        if assign_courier_now != "y":
+            read_all_orders()
+            print("Returning to main menu.")
+            return 0
+        try:
+            valid_couriers = get_correct_courier_ids()
+        except pymysql.err.OperationalError:
+            print("There are no current couriers, returning to the main menu.")
+            return 1
+        read_all_couriers()
+        which_courier = str(input("Which courier ID do you wish to assign?\n").upper())
+        while which_courier not in valid_couriers:
+            print("That courier doesn't exist")
+            which_courier = str(input("Which courier ID do you wish to assign?\n").upper())
+        which_order = this_order_id
+        update_courier_order(order_id=which_order, courier_id=which_courier)
+        update_courier_details(courier_status="assigned", courier_id=which_courier, courier_name="", courier_phone="")
+        read_all_couriers()
         return 0
     elif user_choice_cache == 3:
         read_all_orders()
@@ -142,6 +161,26 @@ def orders_decision_tree():
         delete_order(user_change)
         read_all_orders()
         return 0
-    else:
-        print("No current orders")
+    elif user_choice_cache == 5:
+        try:
+            valid_couriers = get_correct_courier_ids()
+            valid_orders = get_correct_order_ids()
+        except pymysql.err.OperationalError:
+            print("There are no current couriers, returning to the main menu.")
+            return 1
+        read_all_couriers()
+        which_courier = str(input("Which courier ID do you wish to assign?\n").upper())
+        while which_courier not in valid_couriers:
+            print("That courier doesn't exist")
+            which_courier = str(input("Which courier ID do you wish to assign?\n").upper())
+        read_all_orders()
+        which_order = str(input("Which order ID do you wish to assign?\n").upper())
+        while which_order not in valid_orders:
+            print("That order doesn't exist")
+            which_order = str(input("Which order ID do you wish to assign?\n").upper())
+        update_courier_order(order_id=which_order, courier_id=which_courier)
+        update_courier_details(courier_status="assigned", courier_id=which_courier, courier_name="", courier_phone="")
         return 0
+    else:
+        print("An error has occurred, returning to the main menu (else has been hit)")
+        return 1
