@@ -2,7 +2,7 @@
 import pymysql
 from database_handler import get_correct_product_ids, read_all_items, read_all_orders, insert_new_order, get_correct_order_ids
 from database_handler import update_customer_details, update_order_status, read_customer_details, read_orders, read_order_items
-from database_handler import get_available_item_ids_on_orders, insert_new_items, delete_order, update_order_items
+from database_handler import get_available_item_ids_on_orders, insert_new_items, delete_order, update_order_items, read_orders_by_status
 from database_handler import read_all_couriers, get_correct_courier_ids, update_courier_order, update_courier_details
 def orders_get_user_choice():
     """Get's the user's choice and returns the value to be cached later."""
@@ -30,8 +30,31 @@ def orders_decision_tree():
         print("Returning to the main menu...\n\n\n\n\n\n")
         return 1
     elif user_choice_cache == 1:
-        read_all_orders()
-        return 0
+        order_by_status = str(input("Do you wish to filter the orders by status? (y/n)\n").lower())
+        while order_by_status not in ["y", "n"]:
+            print("That is not a valid input.")
+            order_by_status = str(input("Do you wish to filter the orders by status? (y/n)\n").lower())
+        if order_by_status == "n":
+            read_all_orders()
+            return 0
+        try:
+            valid_order_ids = get_correct_order_ids()
+        except pymysql.err.OperationalError:
+            print("There are no current orders, returning to the menu\n")
+            return 0
+        statuses = ["paid", "preparing", "en-route", "completed"]
+        status_length = len(statuses) - 1
+        for (i, item) in enumerate(statuses, start = 0):
+            print(i, item)
+        chosen_status_ind = int(input(f"Please pick a status 0-{status_length}: "))
+        chosen_status = statuses[chosen_status_ind]
+        try:
+            read_orders_by_status(chosen_status)
+            return 0
+        except pymysql.err.OperationalError:
+            print("There are no orders with that status.\nPrinting all orders")
+            read_all_orders()
+            return 0
     elif user_choice_cache == 2:
         customer_name = str(input("What is their name?\n"))
         customer_address = str(input("What is their address?\n"))

@@ -312,6 +312,65 @@ def just_order_items():
                 cleaned_list.append(cleaned_item)
     return cleaned_list
 
+def read_orders_by_status(status):
+    with pymysql.connect(
+        host=host_name,
+        user=user_name,
+        password=user_password,
+        database=database_name,
+    ) as connection:
+        with connection.cursor() as cursor:
+            select_sql = "SELECT order_id, order_status FROM orders WHERE order_status = %s"
+            cursor.execute(select_sql, (status,))
+            rows = cursor.fetchall()
+            
+            # Create a PrettyTable for orders
+            order_table = PrettyTable()
+            order_table.field_names = ["order_id", "order_status"]
+            
+            # List to hold order IDs
+            order_ids = []
+
+            # Add rows to the order table and collect order IDs
+            for row in rows:
+                order_table.add_row(row)
+                order_ids.append(row[0])  # Append the order_id to the list
+            
+            # Print the order table
+            print(order_table)
+            
+            # Create a PrettyTable for customer details
+            customer_details_table = PrettyTable()
+            customer_details_table.field_names = ["order_id", "customer_name", "customer_phone", "customer_address"]
+            
+            # Fetch and display customer details for each order ID
+            for order_id in order_ids:
+                select_customer_sql = """
+                SELECT order_id, customer_name, customer_phone, customer_address
+                FROM order_customer_details
+                WHERE order_id = %s
+                """
+                cursor.execute(select_customer_sql, (order_id,))
+                customer_details = cursor.fetchall()
+                
+                for detail in customer_details:
+                    customer_details_table.add_row(detail)
+            order_details_table = PrettyTable()
+            order_details_table.field_names = ["row_id", "order_id", "item_ordered"]
+            for order_id in order_ids:
+                select_customer_sql = """
+                SELECT row_id, order_id, item_ordered
+                FROM order_items
+                WHERE order_id = %s
+                """
+                cursor.execute(select_customer_sql, (order_id,))
+                items_ordered = cursor.fetchall()
+                
+                for item in items_ordered:
+                    order_details_table.add_row(item)
+        print(customer_details_table)
+        print(order_details_table)
+
 def read_all_orders():
     read_orders()
     read_customer_details()
@@ -524,6 +583,28 @@ def read_all_couriers():
             rows = cursor.fetchall()
             table = PrettyTable()
             table.field_names = ["courier_id", "order_id",]
+
+        # Add rows to the table
+        for row in rows:
+            table.add_row(row)
+        
+        # Print the table
+        print(table)
+
+def read_couriers_by_status(status):
+    with pymysql.connect(
+        host = host_name,
+        user = user_name,
+        password = user_password,
+        database = database_name,
+    ) as connection:
+        with connection.cursor() as cursor:
+            select_sql = ("SELECT * FROM couriers WHERE courier_status = %s")
+            value = status
+            cursor.execute(select_sql, value)
+            rows = cursor.fetchall()
+            table = PrettyTable()
+            table.field_names = ["courier_id", "courier_name", "courier_phone", "courier_status"]
 
         # Add rows to the table
         for row in rows:

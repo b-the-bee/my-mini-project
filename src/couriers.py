@@ -1,6 +1,6 @@
 """Couriers management system"""
 import pymysql
-from database_handler import read_all_couriers, insert_new_courier, get_correct_courier_ids, update_courier_details, update_courier_order, delete_courier
+from database_handler import read_all_couriers, insert_new_courier, get_correct_courier_ids, update_courier_details, update_courier_order, delete_courier, read_couriers_by_status
 from database_handler import read_orders, get_correct_order_ids, get_valid_courier_order_ids, read_all_orders
 def couriers_get_user_choice():
     """Get's the user's choice and returns the value to be cached later."""
@@ -27,8 +27,30 @@ def couriers_decision_tree():
         print("Returning to the main menu, please select the appropriate inputs.\n\n\n\n\n\n")
         return 1
     elif user_choice_cache == 1:
-        read_all_couriers()
-        return 0
+        order_by_status = str(input("Do you wish to filter the couriers by status? (y/n)\n").lower())
+        while order_by_status not in ["y", "n"]:
+            print("That is not a valid input.")
+            order_by_status = str(input("Do you wish to filter the couriers by status? (y/n)\n").lower())
+        if order_by_status == "n":
+            read_all_couriers()
+            return 0
+        try:
+            valid_courier_ids = get_correct_courier_ids()
+        except pymysql.err.OperationalError:
+            print("There are no current couriers, returning to the menu\n")
+            return 0
+        statuses = ["stand-by", "assigned", "en-route", "delayed", "completed"]
+        for (i, item) in enumerate(statuses, start=0):
+            print(i, item)
+        chosen_status_ind = int(input(f"Please pick a status 0-{len(statuses) - 1}: "))
+        chosen_status = statuses[chosen_status_ind]
+        try:
+            read_couriers_by_status(chosen_status)
+            return 0
+        except pymysql.err.OperationalError:
+            print("There are no couriers with that status.\nPrinting all couriers")
+            read_all_couriers()
+            return 0
     elif user_choice_cache == 2:
         courier_name = str(input("What is the courier's name?\n"))
         courier_phone = str(input("What is their phone number?\n"))
