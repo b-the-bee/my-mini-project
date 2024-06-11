@@ -310,7 +310,6 @@ def just_order_items():
                 item = item_tuple[0]  # Extract the string from the tuple
                 cleaned_item = item.replace("(", "").replace(")", "").replace(",", "")
                 cleaned_list.append(cleaned_item)
-    print(cleaned_list)
     return cleaned_list
 
 def read_all_orders():
