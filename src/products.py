@@ -1,26 +1,6 @@
 """The products management module"""
-import json
-
-def read_product_list():
-    """Reads product list and returns it"""
-    try:
-        with open("data/products.json", "r", encoding="UTF-8") as my_file:
-            product_list = json.load(my_file)
-    except FileNotFoundError as fnfe:
-        print(f"Unable to open file: {fnfe}")
-        product_list = []
-    except json.JSONDecodeError as jde:
-        print(f"Error decoding JSON: {jde}")
-        product_list = []
-    return product_list
-
-def write_product_list(product_list):
-    """Function for persisting product list"""
-    try:
-        with open("data/products.json", "w", encoding="UTF-8") as my_file:
-            json.dump(product_list, my_file, indent=4)  # Write the list of dictionaries to the file
-    except FileNotFoundError as fnfe:
-        print(f"Error writing to file: {fnfe}")
+import pymysql
+from database_handler import insert_new_item, read_all_items, get_correct_product_ids, update_item, delete_item
 
 def products_get_user_choice():
     """Gets the user's choice and returns the value to be cached later."""
@@ -47,51 +27,50 @@ def show_products(product_list):
 
 def products_decision_tree():
     """The decision tree for the products program goes through to provide different end user functions"""
-    product_list = read_product_list()
     user_choice_cache = products_get_user_choice()
-
     if user_choice_cache == 0:
         print("Returning to the main menu.\n\n\n\n\n\n")
         return 1
     elif user_choice_cache == 1:
-        show_products(product_list)
+        read_all_items()
         return 0
     elif user_choice_cache == 2:
         product_name = input("What is the name of the item do you wish to add to the list?\n")
-        product_price = float(input("What is the price of the product?"))
-        temp_dict = {
-            "item": product_name,
-            "price": product_price
-        }
-        product_list.append(temp_dict)
-        show_products(product_list)
-        write_product_list(product_list)
+        product_price = float(input("What is the price of the product?\n"))
+        insert_new_item(item= product_name, price= product_price)
+        read_all_items()
         return 0
-    elif user_choice_cache == 3 and product_list:
-        show_products(product_list)
-        product_list_length = len(product_list) - 1
-        user_change = int(input(f"Which item do you wish to change? 0-{product_list_length}: "))
-        while user_change < 0 or user_change > product_list_length:
+    elif user_choice_cache == 3:
+        try:
+            valid_product_ids = get_correct_product_ids()
+        except pymysql.err.OperationalError:
+            print("There are no products, returning to the menu")
+            return 0
+        read_all_items()
+        user_change = str(input("Which item ID do you wish to change?\n").upper())
+        while user_change not in valid_product_ids:
             print("That is not a valid input")
-            user_change = int(input(f"Which item do you wish to change? 0-{product_list_length}: "))
-        valid_keys = ["item", "price",]
-        key_change = str(input(f"What about the product would you like to update? {valid_keys}\n").lower())
-        while key_change not in valid_keys:
-            print("That is not a valid input.")
-            key_change = str(input(f"What about the courier would you like to update? {valid_keys}\n").lower())
-        details_change = str(input("What do you wish to change it to?\n"))
-        write_product_list(product_list)
-        show_products(product_list)
-        write_product_list(product_list)
+            user_change = str(input("Which item ID do you wish to change?\n").upper())
+        change_name = str(input("What do you wish to change the name of the product to?\nOr hit enter to skip\n"))
+        change_price = float(input("What do you wish to change the price of the product to?\nOr hit enter to skip\n"))
+        update_item(item_id = user_change, item_name = change_name, item_price = change_price)
+        read_all_items()
         return 0
-    elif user_choice_cache == 4 and product_list:
-        show_products(product_list)
-        product_list_length = len(product_list) - 1
-        user_change = int(input(f"Which item do you wish to delete? 0-{product_list_length}: "))
-        while user_change < 0 or user_change > product_list_length:
-            print("That is not a valid input")
-            user_change = int(input(f"Which item do you wish to delete? 0-{product_list_length}: "))
-        product_list.pop(user_change)
-        show_products(product_list)
-        write_product_list(product_list)
+    elif user_choice_cache == 4:
+        try:
+            valid_product_ids = get_correct_product_ids()
+        except pymysql.err.OperationalError:
+            print("There are no products, returning to the menu")
+            return 0
+        read_all_items()
+        which_item = str(input("Which item ID do you wish to delete?\nOr leave blank to skip\n").upper())
+        while which_item not in valid_product_ids and which_item:
+            print("That is not a valid item ID")
+            which_item = str(input("Which item ID do you wish to delete?\nOr leave blank to skip\n").upper())
+        if which_item:
+            delete_item(which_item)
+            read_all_items()
+            print("Returning to the menu, item deleted successfully.")
+        else:
+            print("Operation skipped, returning to the menu.")
         return 0

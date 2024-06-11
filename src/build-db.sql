@@ -43,9 +43,11 @@ CREATE TABLE items (
 );
 
 CREATE TABLE order_items (
+  row_id INT NOT NULL AUTO_INCREMENT,
   order_id VARCHAR(255) NOT NULL,
   item_ordered VARCHAR(255) NOT NULL,
-  PRIMARY KEY (item_ordered, order_id),
+  PRIMARY KEY (row_id),
+  UNIQUE KEY (row_id),
   FOREIGN KEY (order_id) REFERENCES orders(order_id),
   FOREIGN KEY (item_ordered) REFERENCES items(item_id)
 );

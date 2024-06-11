@@ -38,7 +38,7 @@ def increment_and_save_id(file_path, id_type):
         new_id = f"C{data['courier_id']:04d}"
     elif id_type == 'item':
         data['item_id'] += 1
-        new_id = f"I{data['item_id']:03d}"
+        new_id = f"P{data['item_id']:03d}"
     elif id_type == 'order':
         data['order_id'] += 1
         new_id = f"O{data['order_id']:04d}"
@@ -106,6 +106,67 @@ def get_correct_product_ids():
             product_id_list = [row[0] for row in product_id_list]
     return product_id_list
 
+def update_item(item_id, item_name, item_price):
+    if item_name:
+        with pymysql.connect(
+            host = host_name,
+            user = user_name,
+            password = user_password,
+            database = database_name,
+        ) as connection:
+            with connection.cursor() as cursor:
+                update_sql = """
+                UPDATE items
+                SET item = %s
+                WHERE item_id = %s
+                """
+                values = (item_name, item_id)
+                cursor.execute(update_sql, values)
+                connection.commit()       
+    if item_price:
+        with pymysql.connect(
+            host = host_name,
+            user = user_name,
+            password = user_password,
+            database = database_name,
+        ) as connection:
+            with connection.cursor() as cursor:
+                update_sql = """
+                UPDATE items
+                SET price = %s
+                WHERE item_id = %s
+                """
+                values = (item_price, item_id)
+                cursor.execute(update_sql, values)
+                connection.commit()
+
+def delete_item(item_id):
+    try:
+        with pymysql.connect(
+            host=host_name,
+            user=user_name,
+            password=user_password,
+            database=database_name
+        ) as connection:
+            with connection.cursor() as cursor:
+                delete_order_items_sql = "DELETE FROM order_items WHERE item_id = %s;"
+
+                cursor.execute(delete_order_items_sql, (item_id,))
+
+            connection.commit()
+    except pymysql.err.OperationalError:
+        print("There are no orders to remove this item from, continuing..")
+    finally:
+        with pymysql.connect(
+                host=host_name,
+                user=user_name,
+                password=user_password,
+                database=database_name
+        ) as connection:
+            with connection.cursor() as cursor:
+                delete_item_sql = "DELETE FROM items WHERE item_id = %s;"   
+                cursor.execute(delete_item_sql, (item_id,))
+            connection.commit()
 # ----------------------
 # Orders Functions
 # ----------------------
@@ -209,7 +270,7 @@ def read_order_items():
             cursor.execute("SELECT * FROM order_items")
             rows = cursor.fetchall()
             table = PrettyTable()
-            table.field_names = ["order_id", "item_ordered"]
+            table.field_names = ["row_id", "order_id", "item_ordered"]
 
         # Add rows to the table
         for row in rows:
@@ -217,6 +278,19 @@ def read_order_items():
         
         # Print the table
         print(table)
+
+def just_order_items():
+    with pymysql.connect(
+        host = host_name,
+        user = user_name,
+        password = user_password,
+        database = database_name,
+    ) as connection:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT item_ordered FROM order_items")
+            info_list = cursor.fetchall()
+    print(info_list)
+    return info_list
 
 def read_all_orders():
     read_orders()

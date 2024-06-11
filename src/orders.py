@@ -154,12 +154,16 @@ def orders_decision_tree():
         except pymysql.err.OperationalError:
             print("There are no current orders, returning to the menu\n")
             return 0
-        user_change = str(input("Which order would you like to delete, please select the order id: ").upper())
-        while user_change not in correct_order_ids:
+        user_change = str(input("Which order ID would you like to delete?\nOr leave blank to skip the operation\n").upper())
+        while user_change not in correct_order_ids and user_change:
             print("That is not a valid order id")
-            user_change = str(input("Which order would you like to change, please select the order id"))
-        delete_order(user_change)
-        read_all_orders()
+            user_change = str(input("Which order ID would you like to delete?\nOr leave blank to skip the operation\n").upper())
+        if user_change:
+            delete_order(user_change)
+            read_all_orders()
+            print("Order removed successfully, returning to the menu")
+        else:
+            print("Operation skipped, returning to the menu.")
         return 0
     elif user_choice_cache == 5:
         try:

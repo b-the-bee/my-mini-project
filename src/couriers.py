@@ -82,12 +82,16 @@ def couriers_decision_tree():
             print("There are no current couriers, returning to the menu\n")
             return 0
         read_all_couriers()
-        user_change = str(input("Which courier do you wish to delete?\n").upper())
-        while user_change not in valid_courier_ids:
+        user_change = str(input("Which courier do you wish to delete?\nOr leave blank to skip\n").upper())
+        while user_change not in valid_courier_ids and user_change:
             print("That is not a valid courier ID")
-            user_change = str(input("Which courier do you wish to delete?\n").upper())
-        delete_courier(user_change)
-        read_all_couriers()
+            user_change = str(input("Which courier do you wish to delete?\nOr leave blank to skip\n").upper())
+        if user_change:
+            delete_courier(user_change)
+            read_all_couriers()
+            print("Courier removed successfully, returning to the menu")
+        else:
+            print("Operation skipped, returning to the menu.")
         return 0
     elif user_choice_cache == 5:
         try:
