@@ -1,1 +1,0 @@
-# These must be executed in a folder with .env, I used them to A. Practice Python and B. Understand more about what goes on with PyMySQL, I do plan on removing these in future commits so if you're reading this from the future, hi.

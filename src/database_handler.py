@@ -106,6 +106,20 @@ def get_correct_product_ids():
             product_id_list = [row[0] for row in product_id_list]
     return product_id_list
 
+def get_item_names():
+    with pymysql.connect(
+        host=host_name,
+        user=user_name,
+        password=user_password,
+        database=database_name
+    ) as connection:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT item_id, item FROM items")
+            item_name_tuple_list = cursor.fetchall()
+            # Create a dictionary mapping item_id to item_name
+            item_name_dict = {item_id: item for item_id, item in item_name_tuple_list}
+    return item_name_dict
+
 def update_item(item_id, item_name, item_price):
     if item_name:
         with pymysql.connect(
@@ -281,16 +295,23 @@ def read_order_items():
 
 def just_order_items():
     with pymysql.connect(
-        host = host_name,
-        user = user_name,
-        password = user_password,
-        database = database_name,
+        host=host_name,
+        user=user_name,
+        password=user_password,
+        database=database_name,
     ) as connection:
         with connection.cursor() as cursor:
             cursor.execute("SELECT item_ordered FROM order_items")
             info_list = cursor.fetchall()
-    print(info_list)
-    return info_list
+            
+            # Extract items from tuples and clean them
+            cleaned_list = []
+            for item_tuple in info_list:
+                item = item_tuple[0]  # Extract the string from the tuple
+                cleaned_item = item.replace("(", "").replace(")", "").replace(",", "")
+                cleaned_list.append(cleaned_item)
+    print(cleaned_list)
+    return cleaned_list
 
 def read_all_orders():
     read_orders()
