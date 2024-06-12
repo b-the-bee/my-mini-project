@@ -17,14 +17,6 @@ def products_get_user_choice():
                             \nDelete Product(4). \n")
     return int(user_choice)
 
-def show_products(product_list):
-    """Generates an indexed list of products."""
-    print("Here is the list of the products:")
-    for (i, item) in enumerate(product_list):
-        print(f"""\n{i}
-              Product: {item["item"]}
-              Price: £{item["price"]: .2f}""")
-
 def products_decision_tree():
     """The decision tree for the products program goes through to provide different end user functions"""
     user_choice_cache = products_get_user_choice()
