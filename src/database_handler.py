@@ -247,7 +247,7 @@ def read_customer_details():
         database = database_name,
     ) as connection:
         with connection.cursor() as cursor:
-            cursor.execute("SELECT * FROM order_customer_details")
+            cursor.execute("SELECT ocd.*, oi.item_ordered FROM order_customer_details ocd INNER JOIN order_items oi ON ocd.order_id=oi.order_id")
             data = cursor.fetchall()
             
     return data

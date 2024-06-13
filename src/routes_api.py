@@ -10,6 +10,14 @@ def get_order_items():
 def get_customer_details():
     return jsonify(db.read_customer_details())
 
+@api.route('/api/customers', methods=["PUT"])
+def add_customer_details():
+    new_customer = db.insert_new_order(request.json.get('order_status'), request.json.get('customers_name'), request.json.get('customers_address'), request.json.get('customers_phone'), chosens_products = request.json.get('chosen_product').split(","))
+    if new_customer:
+        return jsonify({"result": "success", "order": new_customer})
+    else:
+        return jsonify({"result": "Order not found"}), 404
+   
 
 @api.route('/api/orders', methods=["POST"])
 def update_order():

@@ -5,11 +5,55 @@
     <meta charset="utf-8">
     <title>Customer Details</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
 </head>
 
 <body>
+    <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addModalLabel">Add Order</h5>
+                </div>
+                <div class="modal-body">
+                    <form id="add-order-form">
+                        <div class="form-group">
+                            <label for="add-order-status">Order Status</label>
+                            <input type="text" class="form-control" placeholder="paid/preparing/en-route/completed"
+                                id="add-order-status">
+                        </div>
+                        <div class="form-group">
+                            <label for="add-customer-name">Customer Name</label>
+                            <input type="text" class="form-control" id="add-customer-name">
+                        </div>
+                        <div class="form-group">
+                            <label for="add-customer-address">Customer Address</label>
+                            <input type="text" class="form-control" id="add-customer-address">
+                        </div>
+                        <div class="form-group">
+                            <label for="add-customer-phone">Customer Phone</label>
+                            <input type="text" class="form-control" id="add-customer-phone">
+                        </div>
+                        <div class="form-group">
+                            <label for="add-customer-items">Customer Items (Comma Separated)</label>
+                            <input type="text" class="form-control" placeholder="item1,item2,etc" id="add-customer-items">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="save-changes">Add Entry</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
     <div class="container">
         <h1 class="my-4">Customer Data</h1>
+        <button class="btn btn-success btn-sm add-button">
+            <i class="fa fa-plus"></i>
+        </button>
         <table class="table table-striped" id="user-table">
             <thead>
                 <tr>
@@ -17,6 +61,7 @@
                     <th>customer_name</th>
                     <th>customer_phone</th>
                     <th>customer_address</th>
+                    <th>items</th>
                 </tr>
             </thead>
             <tbody>
@@ -25,23 +70,54 @@
         </table>
     </div>
     <script>
+        document.querySelectorAll('.add-button').forEach(function (button) {
+            button.addEventListener('click', function () {
+                $('#addModal').modal('show');
+            });
+        });
         document.addEventListener('DOMContentLoaded', function () {
             fetch('/api/customers')
                 .then(response => response.json())
                 .then(data => {
                     const tableBody = document.querySelector('#user-table tbody');
-                    data.forEach(user => {
+                    data.forEach(customer => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
-              <td>${user[0]}</td>
-              <td>${user[1]}</td>
-              <td>${user[2]}</td>
-              <td>${user[3]}</td>
+              <td>${customer[0]}</td>
+              <td>${customer[1]}</td>
+              <td>${customer[2]}</td>
+              <td>${customer[3]}</td>
+              <td>${customer[4]}</td>
             `;
                         tableBody.appendChild(row);
                     });
-                })
-                .catch(error => console.error('Error fetching data:', error));
+                });
+        });
+        document.getElementById('save-changes').addEventListener('click', function () {
+            var orderStatus = document.getElementById('add-order-status').value;
+            var customerName = document.getElementById('add-customer-name').value;
+            var customerAddress = document.getElementById('add-customer-address').value;
+            var customerPhone = document.getElementById('add-customer-phone').value;
+            var customerItems = document.getElementById('add-customer-items').value;
+
+            fetch('/api/customers', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 'order_status': orderStatus, 'customers_name': customerName, 'customers_address': customerAddress, 'customers_phone': customerPhone, 'chosen_product': customerItems })
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.result === 'success') {
+                // Update the row in the table
+                location.reload()
+              }
+              else {
+                console.error('Failed to add order');
+              }
+            })
+            .catch(error => console.error('Error adding order:', error));
         });
     </script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
