@@ -521,6 +521,7 @@ def delete_order(order_id):
         database=database_name
     ) as connection:
         with connection.cursor() as cursor:
+            delete_order_courier_details_sql = "DELETE FROM courier_delivery_details WHERE order_id = %s";
             delete_order_customer_details_sql = "DELETE FROM order_customer_details WHERE order_id = %s;"
             delete_order_items_sql = "DELETE FROM order_items WHERE order_id = %s;"
             delete_order_sql = "DELETE FROM orders WHERE order_id = %s;"
