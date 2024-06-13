@@ -2,12 +2,6 @@ from flask import *
 import database_handler as db
 api = Blueprint('api', __name__)
 
-@api.route('/api/orders', methods=["PUT"])
-def insert_new_order():
-    db.insert_new_order(request.json.get('orders_status'), request.json.get('customers_name'), request.json.get('customers_address'), request.json.get('customers_phone'), request.json.get('chosens_products'))
-    return jsonify({"result": "success"})
-
-
 @api.route('/api/order-items')
 def get_order_items():
     return jsonify(db.read_order_items())

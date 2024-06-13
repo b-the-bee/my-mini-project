@@ -11,19 +11,15 @@ def order_details():
 def order_items():
     return send_file('static/order-items.html')
 
-
+# GET items info
+@web.route('/orders')
+def orders():
+    return send_file('static/orders.html')
 
 # GET customer details
 @web.route('/customer-details')
 def customer_details():
     return send_file('static/customer-details.html')
-
-
-
-# GET orders
-@web.route('/orders')
-def order_details():
-    return send_file('static/orders.html')
 
 # GET couriers
 @web.route('/couriers')
