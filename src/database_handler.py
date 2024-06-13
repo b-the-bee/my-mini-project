@@ -4,7 +4,6 @@ import string
 import json
 import pymysql
 from dotenv import load_dotenv
-from prettytable import PrettyTable
 
 load_dotenv()
 
@@ -81,16 +80,8 @@ def read_all_items():
     ) as connection:
         with connection.cursor() as cursor:
             cursor.execute("SELECT * FROM items")
-            rows = cursor.fetchall()
-            table = PrettyTable()
-            table.field_names = ["item_id", "item", "price"]
-
-        # Add rows to the table
-        for row in rows:
-            table.add_row(row)
-        
-        # Print the table
-        print(table)
+            data = cursor.fetchall()
+    return data
 
 def get_correct_product_ids():
     with pymysql.connect(
@@ -244,16 +235,10 @@ def read_orders():
     ) as connection:
         with connection.cursor() as cursor:
             cursor.execute("SELECT * FROM orders")
-            rows = cursor.fetchall()
-            table = PrettyTable()
-            table.field_names = ["order_id", "order_status"]
-
-        # Add rows to the table
-        for row in rows:
-            table.add_row(row)
+            data = cursor.fetchall()
+    return data       
         
-        # Print the table
-        print(table)
+
 def read_customer_details():
     with pymysql.connect(
         host = host_name,
@@ -263,15 +248,9 @@ def read_customer_details():
     ) as connection:
         with connection.cursor() as cursor:
             cursor.execute("SELECT * FROM order_customer_details")
-            rows = cursor.fetchall()
-            table = PrettyTable()
-            table.field_names = ["order_id", "customer_name", "customer_phone", "customer_address"]
-
-        # Add rows to the table
-        for row in rows:
-            table.add_row(row)
-        # Print the table
-        print(table)
+            data = cursor.fetchall()
+            
+    return data
         
 def read_order_items():
     with pymysql.connect(
@@ -282,17 +261,38 @@ def read_order_items():
     ) as connection:
         with connection.cursor() as cursor:
             cursor.execute("SELECT * FROM order_items")
-            rows = cursor.fetchall()
-            table = PrettyTable()
-            table.field_names = ["row_id", "order_id", "item_ordered"]
+            data = cursor.fetchall()
+        return data
+    
+import pymysql
 
-        # Add rows to the table
-        for row in rows:
-            table.add_row(row)
+def read_one_order(order_id):
+    connection = pymysql.connect(
+        host=host_name,
+        user=user_name,
+        password=user_password,
+        database=database_name,
+    )
+    try:
+        with connection:
+            with connection.cursor() as cursor:
+                sql = "SELECT * FROM orders WHERE order_id = %s"
+                cursor.execute(sql, (order_id,))
+                data = cursor.fetchone()
+                if data:
+                    # Fetch column names from cursor description
+                    columns = [desc[0] for desc in cursor.description]
+                    # Combine columns and data into a dictionary
+                    result = dict(zip(columns, data))
+                    return result
+                else:
+                    return None
+    except pymysql.MySQLError as e:
+        print(f"Error: {e}")
+        return None
+
+
         
-        # Print the table
-        print(table)
-
 def just_order_items():
     with pymysql.connect(
         host=host_name,
@@ -368,8 +368,7 @@ def read_orders_by_status(status):
                 
                 for item in items_ordered:
                     order_details_table.add_row(item)
-        print(customer_details_table)
-        print(order_details_table)
+        return customer_details_table,
 
 def read_all_orders():
     read_orders()
@@ -521,10 +520,12 @@ def delete_order(order_id):
         database=database_name
     ) as connection:
         with connection.cursor() as cursor:
+            delete_order_courier_details_sql = "DELETE FROM courier_delivery_details WHERE order_id = %s";
             delete_order_customer_details_sql = "DELETE FROM order_customer_details WHERE order_id = %s;"
             delete_order_items_sql = "DELETE FROM order_items WHERE order_id = %s;"
             delete_order_sql = "DELETE FROM orders WHERE order_id = %s;"
             
+            cursor.execute(delete_order_courier_details_sql , (order_id))
             cursor.execute(delete_order_customer_details_sql, (order_id,))
             cursor.execute(delete_order_items_sql, (order_id,))
             cursor.execute(delete_order_sql, (order_id,))
@@ -553,7 +554,7 @@ def insert_new_courier(courier_name, courier_phone, courier_status):
             cursor.execute(insert_sql, values)
             connection.commit()
             
-def read_all_couriers():
+def read_couriers():
     with pymysql.connect(
         host = host_name,
         user = user_name,
@@ -562,16 +563,12 @@ def read_all_couriers():
     ) as connection:
         with connection.cursor() as cursor:
             cursor.execute("SELECT * FROM couriers")
-            rows = cursor.fetchall()
-            table = PrettyTable()
-            table.field_names = ["courier_id", "courier_name", "courier_phone", "courier_status"]
+            data = cursor.fetchall()
 
-        # Add rows to the table
-        for row in rows:
-            table.add_row(row)
-        
-        # Print the table
-        print(table)
+    return data
+    
+
+def read_couriers_delivery():
     with pymysql.connect(
         host = host_name,
         user = user_name,
@@ -580,16 +577,8 @@ def read_all_couriers():
     ) as connection:
         with connection.cursor() as cursor:
             cursor.execute("SELECT * FROM courier_delivery_details")
-            rows = cursor.fetchall()
-            table = PrettyTable()
-            table.field_names = ["courier_id", "order_id",]
-
-        # Add rows to the table
-        for row in rows:
-            table.add_row(row)
-        
-        # Print the table
-        print(table)
+            data = cursor.fetchall()
+    return data
 
 def read_couriers_by_status(status):
     with pymysql.connect(
