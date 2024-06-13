@@ -3,6 +3,10 @@ import database_handler as db
 web = Blueprint('web', __name__)
 
 # GET order items
+@web.route('/index')
+def order_details():
+    return send_file('static/index.html')
+
 @web.route('/order-items')
 def order_items():
     return send_file('static/order-items.html')
