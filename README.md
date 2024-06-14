@@ -43,11 +43,12 @@ docker compose up
 into the SQL command box and execute like previously shown.
 
 ## Final Step
-12. Run `main.py` by either clicking the play button in the top right of vscode or in the terminal with
+12. Run `run.py` by either clicking the play button in the top right of vscode or in the terminal with
 ```
-python src\main.py
+python src\run.py
 ```
-13. The program will now be usable, enjoy using it! I've included more information about the project itself below.
+13. The program will now be usable on the IP generated in the terminal, go to this IP with /index to view the different tables and interact with them. 
+I hope you enjoy using it! I've included more information about the project itself below.
 
 # Running analysis
 To analyse the frequency of products used, open the products frequency analysis jupyter notebook and click run on the left.
