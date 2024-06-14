@@ -56,6 +56,9 @@ python -m pytest
 ```
 The test will run and pick up test_products.py, outputting the result of the test in the terminal.
 
+# Running analysis
+To analyse the frequency of products used, open the products frequency analysis jupyter notebook and click run on the left.
+
 # Project reflections
 How did your design go about meeting the project's requirements?
 To meet the requirements, each week I created a mental plan for each week about what I would do and how to implement it.
