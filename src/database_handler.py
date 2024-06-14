@@ -551,9 +551,9 @@ def insert_new_courier(courier_name, courier_phone, courier_status):
             VALUES (%s, %s, %s, %s)
             """
             values = (new_courier_id, courier_name, courier_phone, courier_status)
-            cursor.execute(insert_sql, values)
+            data = cursor.execute(insert_sql, values)
             connection.commit()
-            
+    return data            
 def read_couriers():
     with pymysql.connect(
         host = host_name,
@@ -566,7 +566,31 @@ def read_couriers():
             data = cursor.fetchall()
 
     return data
-    
+
+def read_one_courier(courier_id):
+    connection = pymysql.connect(
+        host=host_name,
+        user=user_name,
+        password=user_password,
+        database=database_name,
+    )
+    try:
+        with connection:
+            with connection.cursor() as cursor:
+                sql = "SELECT * FROM couriers WHERE courier_id = %s"
+                cursor.execute(sql, (courier_id,))
+                data = cursor.fetchone()
+                if data:
+                    # Fetch column names from cursor description
+                    columns = [desc[0] for desc in cursor.description]
+                    # Combine columns and data into a dictionary
+                    result = dict(zip(columns, data))
+                    return result
+                else:
+                    return None
+    except pymysql.MySQLError as e:
+        print(f"Error: {e}")
+        return None    
 
 def read_couriers_delivery():
     with pymysql.connect(

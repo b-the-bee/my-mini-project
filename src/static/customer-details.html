@@ -105,13 +105,18 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ 'order_status': orderStatus, 'customers_name': customerName, 'customers_address': customerAddress, 'customers_phone': customerPhone, 'chosen_product': customerItems })
+                body: JSON.stringify({
+                    'order_status': orderStatus,
+                    'customers_name': customerName,
+                    'customers_address': customerAddress,
+                    'customers_phone': customerPhone,
+                    'chosen_product': customerItems })
             })
             .then(response => response.json())
             .then(data => {
               if (data.result === 'success') {
                 // Update the row in the table
-                location.reload()
+                    
               }
               else {
                 console.error('Failed to add order');

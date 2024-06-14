@@ -5,46 +5,246 @@
     <meta charset="utf-8">
     <title>Courier Details</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
 </head>
 
 <body>
     <div class="container">
         <h1 class="my-4">Courier Data</h1>
+        <button class="btn btn-primary mb-3" data-toggle="modal" data-target="#addModal"><i
+                class="fa fa-plus"></i></button>
         <table class="table table-striped" id="user-table">
             <thead>
                 <tr>
-                    <th>courier_id</th>
-                    <th>courier_name</th>
-                    <th>courier_phone</th>
-                    <th>courier_status</th>
+                    <th>Courier ID</th>
+                    <th>Courier Name</th>
+                    <th>Courier Phone</th>
+                    <th>Courier Status</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 <!-- Data will be inserted here by JavaScript -->
             </tbody>
-        </table>
+
     </div>
+
+    <!-- Edit Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Edit Courier</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="edit-courier-form">
+                        <div class="form-group">
+                            <label for="edit-courier-id">Courier ID</label>
+                            <input type="text" class="form-control" id="edit-courier-id" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-courier-name">Courier Name</label>
+                            <input type="text" class="form-control" id="edit-courier-name">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-courier-phone">Courier Phone</label>
+                            <input type="text" class="form-control" id="edit-courier-phone">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-courier-status">Courier Status</label>
+                            <input type="text" class="form-control" id="edit-courier-status">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="save-edit-changes">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Modal -->
+    <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addModalLabel">Add Courier</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-courier-form">
+                        <div class="form-group">
+                            <label for="add-courier-name">Courier Name</label>
+                            <input type="text" class="form-control" id="add-courier-name">
+                        </div>
+                        <div class="form-group">
+                            <label for="add-courier-phone">Courier Phone</label>
+                            <input type="text" class="form-control" id="add-courier-phone">
+                        </div>
+                        <div class="form-group">
+                            <label for="add-courier-status">Courier Status</label>
+                            <input type="text" class="form-control" id="add-courier-status">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="add-courier">Add Courier</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </table>
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             fetch('/api/couriers')
                 .then(response => response.json())
                 .then(data => {
                     const tableBody = document.querySelector('#user-table tbody');
-                    data.forEach(user => {
+                    data.forEach(courier => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
-              <td>${user[0]}</td>
-              <td>${user[1]}</td>
-              <td>${user[2]}</td>
-              <td>${user[3]}</td>
-            `;
+                            <td>${courier[0]}</td>
+                            <td>${courier[1]}</td>
+                            <td>${courier[2]}</td>
+                            <td>${courier[3]}</td>
+                            <td>
+              <button class="btn btn-warning btn-sm edit-button" data-id="${courier[0]}" data-status="${courier[1]}">
+                <i class="fas fa-edit"></i> Edit
+              </button>
+            <form method="post" action="/" style="display:inline;">
+              <input type="hidden" name="action" value="delete">
+              <input type="hidden" name="courier_id" value="${courier[0]}">
+              <button type="submit" class="btn btn-danger btn-sm delete-button">
+                <i class="fas fa-trash-alt"></i> Delete
+              </button>
+            </form>
+          </td>
+                        `;
                         tableBody.appendChild(row);
+                    });
+                }).then(_ => {
+                    document.querySelectorAll('.delete-button').forEach(function (button) {
+                        button.addEventListener('click', function (event) {
+                            event.preventDefault();
+                            var courierId = this.closest('form').querySelector('input[name="courier_id"]').value;
+
+                            fetch(`/api/couriers`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ 'courier_id': courierId })
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.result === 'success') {
+                                        this.closest('tr').remove();
+                                    } else {
+                                        console.error('Failed to delete courier');
+                                    }
+                                })
+                                .catch(error => console.error('Error:', error));
+                        });
+                    });
+                }).then(_ => {
+                    document.querySelectorAll('.edit-button').forEach(button => {
+                        button.addEventListener('click', function () {
+                            var courierId = this.getAttribute('data-id');
+                            fetch(`/api/couriers/${courierId}`)
+                                .then(response => response.json())
+                                .then(courier => {
+                                    document.getElementById('edit-courier-id').value = courier.courier.courier_id;
+                                    document.getElementById('edit-courier-name').value = courier.courier.courier_name;
+                                    document.getElementById('edit-courier-phone').value = courier.courier.courier_phone;
+                                    document.getElementById('edit-courier-status').value = courier.courier.courier_status;
+                                    $('#editModal').modal('show');
+                                })
+                                .catch(error => 
+                                console.error('Error fetching courier data:', error)
+                            );
+                        });
+                    });
+                }).then(_ => {
+                    document.getElementById('save-edit-changes').addEventListener('click', function () {
+                        const courierId = document.getElementById('edit-courier-id').value;
+                        const courierName = document.getElementById('edit-courier-name').value;
+                        const courierPhone = document.getElementById('edit-courier-phone').value;
+                        const courierStatus = document.getElementById('edit-courier-status').value;
+
+                        fetch(`/api/couriers/${courierId}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                courier_id: courierId,
+                                courier_name: courierName,
+                                courier_phone: courierPhone,
+                                courier_status: courierStatus
+                            })
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.result === 'success') {
+                                    const row = document.querySelector(`button[data-id="${courierId}"]`).closest('tr');
+                                    row.querySelector('td:nth-child(2)').textContent = courierName;
+                                    row.querySelector('td:nth-child(3)').textContent = courierPhone;
+                                    row.querySelector('td:nth-child(4)').textContent = courierStatus;
+                                    $('#editModal').modal('hide');
+                                } else {
+                                    console.error('Failed to update courier');
+                                }
+                            })
+                            .catch(error => console.error('Error updating courier:', error));
                     });
                 })
                 .catch(error => console.error('Error fetching data:', error));
+
+        });
+
+
+        document.getElementById('add-courier').addEventListener('click', function () {
+            const courierName = document.getElementById('add-courier-name').value;
+            const courierPhone = document.getElementById('add-courier-phone').value;
+            const courierStatus = document.getElementById('add-courier-status').value;
+
+            fetch('/api/couriers', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    courier_name: courierName,
+                    courier_phone: courierPhone,
+                    courier_status: courierStatus
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.result === 'success') {
+                        location.reload()
+
+                    } else {
+                        console.error('Failed to add courier');
+                    }
+                })
+                .catch(error => console.error('Error adding courier:', error));
         });
     </script>
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
+
+</html>
