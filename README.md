@@ -49,5 +49,16 @@ python src\main.py
 ```
 13. The program will now be usable, enjoy using it! I've included more information about the project itself below.
 
+# Project reflections
+How did your design go about meeting the project's requirements?
+To meet the requirements, each week I created a mental plan for each week about what I would do and how to implement it.
 
+How did you guarantee the project's requirements?
+I read through my notes to see what we had done that week, and how to implement it into my project for the sake of refactoring.
 
+If you had more time, what is one thing you would improve upon?
+I would further annotate my code to explain each function and refactor for simplicity. I would also complete the API and website on the GUI branch/
+
+What did you most enjoy implementing?
+I most enjoyed implementing SQL and a Flask API into my project, this was a good challenge as I had only done a little bit of each previously and it was interesting,
+I got to learn more about other programming and development languages and how to have them interact with my Python code.
