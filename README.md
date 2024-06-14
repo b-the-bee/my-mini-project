@@ -49,6 +49,9 @@ python src\main.py
 ```
 13. The program will now be usable, enjoy using it! I've included more information about the project itself below.
 
+# Running analysis
+To analyse the frequency of products used, open the products frequency analysis jupyter notebook and click run on the left.
+
 # Project reflections
 How did your design go about meeting the project's requirements?
 To meet the requirements, each week I created a mental plan for each week about what I would do and how to implement it.
