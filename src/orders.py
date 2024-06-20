@@ -79,6 +79,9 @@ def orders_decision_tree():
         for (i, item) in enumerate(statuses, start = 0):
             print(i, item)
         chosen_status_ind = int(input(f"Please pick a status 0-{status_length}: "))
+        while chosen_status_ind not in range(status_length):
+            print("That is invalid.")
+            chosen_status_ind = int(input(f"Please pick a status 0-{status_length}: "))
         chosen_status = statuses[chosen_status_ind]
         this_order_id = insert_new_order(chosen_status, customer_name, customer_address, customer_phone, chosen_product_list)
         assign_courier_now = str(input("Do you wish to assign a courier to this order now? y/n\n").lower())

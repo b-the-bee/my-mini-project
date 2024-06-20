@@ -40,9 +40,13 @@ def couriers_decision_tree():
             print("There are no current couriers, returning to the menu\n")
             return 0
         statuses = ["stand-by", "assigned", "en-route", "delayed", "completed"]
-        for (i, item) in enumerate(statuses, start=0):
+        status_length = int(len(statuses) - 1)
+        for (i, item) in enumerate(statuses, start = 0):
             print(i, item)
-        chosen_status_ind = int(input(f"Please pick a status 0-{len(statuses) - 1}: "))
+        chosen_status_ind = int(input(f"Please pick a status 0-{status_length}: "))
+        while chosen_status_ind not in range(status_length):
+            print("That is invalid.")
+            chosen_status_ind = int(input(f"Please pick a status 0-{status_length}: "))
         chosen_status = statuses[chosen_status_ind]
         try:
             read_couriers_by_status(chosen_status)
@@ -55,9 +59,13 @@ def couriers_decision_tree():
         courier_name = str(input("What is the courier's name?\n"))
         courier_phone = str(input("What is their phone number?\n"))
         statuses = ["stand-by", "assigned", "en-route", "delayed", "completed"]
-        for (i, item) in enumerate(statuses, start=0):
+        for (i, item) in enumerate(statuses, start = 0):
             print(i, item)
-        chosen_status_ind = int(input(f"Please pick a status (it is recommended to insert as stand-by when adding new courier) 0-{len(statuses) - 1}: "))
+        status_length = int(len(statuses) - 1)
+        chosen_status_ind = int(input(f"Please pick a status 0-{status_length}: "))
+        while chosen_status_ind not in range(status_length):
+            print("That is invalid.")
+            chosen_status_ind = int(input(f"Please pick a status 0-{status_length}: "))
         chosen_status = statuses[chosen_status_ind]
         insert_new_courier(courier_name=courier_name, courier_phone=courier_phone, courier_status=chosen_status)
         return 0
