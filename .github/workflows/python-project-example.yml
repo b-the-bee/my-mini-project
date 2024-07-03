@@ -22,7 +22,7 @@ jobs:
 
       # Run pip to install all packages/dependencies
       - name: Install-dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r src/requirements.txt
 
       # Run tests
       - name: Run-Tests
