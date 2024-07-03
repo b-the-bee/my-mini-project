@@ -30,3 +30,4 @@ jobs:
 
       # Launch CLI
       - name: Launch-CLI
+        run: python src/main.py
