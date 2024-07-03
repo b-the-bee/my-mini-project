@@ -1,32 +1,32 @@
-# Name your job/action
-name: Python application
+name: RunTestsAndProgram
+
 # When to run this job
 on: [push]
 
 jobs:
-    build:
+  build:
     # Which operating system to test on - e.g. "macos-latest, ubuntu-latest, windows-latest"
-    runs-on: [ ubuntu-latest ]
+    runs-on: ubuntu-latest
 
     # The steps to run in the job
     steps:
-        # Checkout code from github
+      # Checkout code from github
       - name: Checkout-code
         uses: actions/checkout@v2
 
-        # Install python
+      # Install python
       - name: Set-up-Python
         uses: actions/setup-python@v1
         with:
-            python-version: [ 3.10 ]
+          python-version: '3.10'
 
-        # Run pip to install all packages/dependencies
+      # Run pip to install all packages/dependencies
       - name: Install-dependencies
         run: pip install -r requirements.txt
 
-        # Further tasks
+      # Run tests
       - name: Run-Tests
-        run : echo python -m pytest
+        run: python -m pytest
 
+      # Launch CLI
       - name: Launch-CLI
-        run: echo python src/main.py
