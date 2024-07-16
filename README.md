@@ -31,8 +31,8 @@ cd source
 docker compose up
 ```
 7. You should now have access to the database, go to http://localhost:8080/.
-8. Enter the username and password from `src\.env` with the database name as `order_mgmt`. ![alt text](readme-images\image0.png)
-9. Go to SQL command. ![alt text](readme-images\image1.png)
+8. Enter the username and password from `src\.env` with the database name as `order_mgmt`. ![alt text](readme-images/image0.png)
+9. Go to SQL command. ![alt text](readme-images/image1.png)
 10. Copy-paste the `src\build-db.sql` SQL commands then click execute, the database is now setup.
 
 ## Optional extra steps
